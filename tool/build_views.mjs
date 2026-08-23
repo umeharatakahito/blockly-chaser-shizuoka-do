@@ -96,7 +96,8 @@ for (const lng of LANGS) {
   // チュートリアルはステージごとに1ページ
   const tutorial = JSON.parse(fs.readFileSync(path.join(root, 'src', 'data', 'tutorial.json'), 'utf8'));
   for (const [stage, stagedata] of Object.entries(tutorial.tutorial)) {
-    const xmlKey = String(stagedata.workspace_xml ?? '');
+    // 本家と同じく load_workspace (例: "01.xml") で初期ブロックを引く
+    const xmlKey = String(stagedata.load_workspace ?? '');
     try {
       render('tutorial', {
         title: stagedata.name,
