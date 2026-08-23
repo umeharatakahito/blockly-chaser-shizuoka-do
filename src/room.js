@@ -235,6 +235,9 @@ export class MatchRoom extends DurableObject {
     await this.timers.cancel(TIMER_CPU);
     this.#saveMatch(match);
 
+    // 大会側へ結果を送る。失敗しても試合の進行には影響させない
+    this.ctx.waitUntil(this.#reportResult(match).catch(() => {}));
+
     // 本家の綴りに合わせる (winer)。クライアントがこの名前で読んでいる
     this.#broadcastEvent('game_result', {
       winer: match.result.winner,
@@ -272,6 +275,30 @@ export class MatchRoom extends DurableObject {
         await this.#finish(match);
       }
     }
+  }
+
+  /**
+   * 試合結果を大会データへ記録する。
+   * トーナメント表には自動で反映しない。運営が取り込む候補になるだけ。
+   */
+  async #reportResult(match) {
+    if (!this.env.TOURNAMENT) return;
+
+    const store = this.env.TOURNAMENT.get(this.env.TOURNAMENT.idFromName('main'));
+    await store.fetch('https://do/tournament/record', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        roomId: this.#read('room_id', ''),
+        roomName: match.state.name || '',
+        coolName: match.state.cool.name,
+        hotName: match.state.hot.name,
+        coolScore: match.state.cool.score,
+        hotScore: match.state.hot.score,
+        winner: match.result.winner,
+        info: match.result.info,
+      }),
+    });
   }
 
   /* ---------------------------------------------- 送信 */

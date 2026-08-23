@@ -10,6 +10,7 @@
  */
 
 export { MatchRoom } from './room.js';
+export { TournamentStore } from './tournament_do.js';
 
 import { statusPage } from './status_page.js';
 import maps from './data/maps.json' with { type: 'json' };
@@ -81,6 +82,22 @@ export default {
     if (path === '/api/tutorial') return Response.json(tutorialData.tutorial);
 
     if (path === '/api/bgm') return Response.json([]);
+
+    /* --- 対戦表 --- */
+    if (path.startsWith('/tournament')) {
+      const store = env.TOURNAMENT.get(env.TOURNAMENT.idFromName('main'));
+
+      // データのやりとりは Durable Object へ渡す
+      if (path === '/tournament/data' || path === '/tournament/admin-data'
+          || (request.method === 'POST' && path.startsWith('/tournament/'))) {
+        return store.fetch(request);
+      }
+
+      // 画面
+      const lngT = pickLang(request);
+      if (path === '/tournament') return page(request, env, lngT, 'tournament');
+      if (path === '/tournament/admin') return page(request, env, lngT, 'tournament-admin');
+    }
 
     if (path === '/health') {
       return Response.json({

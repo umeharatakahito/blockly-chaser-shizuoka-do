@@ -43,6 +43,8 @@ const PAGES = [
   { view: 'match-cpu', lngFile: null, title: { ja: '対戦', 'ja-k': 'たいせん' } },
   { view: 'match-player', lngFile: null, title: { ja: '対戦', 'ja-k': 'たいせん' } },
   { view: 'watching', lngFile: null, title: { ja: '観戦', 'ja-k': 'かんせん' } },
+  { view: 'tournament', lngFile: null, title: { ja: '対戦表', 'ja-k': 'たいせんひょう' } },
+  { view: 'tournament-admin', lngFile: null, title: { ja: 'トーナメントの管理', 'ja-k': 'トーナメントのかんり' } },
 ];
 
 /**
