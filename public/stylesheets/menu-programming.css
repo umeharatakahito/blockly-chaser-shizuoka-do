@@ -97,6 +97,14 @@
     height: 134px;
 }
 
+.boxsampleimage {
+    background-image: url(../images/openfile.png);
+    background-repeat: no-repeat;
+    background-position: 50% 70px;
+    height: 134px;
+    filter: hue-rotate(120deg);
+}
+
 .boxdbimage {
     background-image: url(../images/dbfile.png);
     background-repeat: no-repeat;

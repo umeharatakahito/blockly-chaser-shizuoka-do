@@ -12,6 +12,9 @@ $(function () {
     if (href == "#d3") {
       var position = 500;
     }
+    if (href == "#d4") {
+      var position = 750;
+    }
     //console.log(href);
     var x = document.getElementsByClassName('slider-x');
     x[0].style.scrollSnapType = "none";
@@ -29,6 +32,7 @@ $(function () {
     var d1 = document.getElementById('d1');
     var d2 = document.getElementById('d2');
     var d3 = document.getElementById('d3');
+    var d4 = document.getElementById('d4');
     var b = document.getElementsByClassName('select_button');
     var localload = document.getElementById('loadstart');
 
@@ -45,11 +49,21 @@ $(function () {
       d2.style.transform = "scale(" + d2s + ")";
       var d3s = 1.0 + 0.14 * ((x[0].scrollLeft - 250) / 250);
       d3.style.transform = "scale(" + d3s + ")";
+      d4.style.transform = "scale(1.0)";
+    }
+    else if (x[0].scrollLeft <= 750) {
+      d1.style.transform = "scale(1.0)";
+      d2.style.transform = "scale(1.0)";
+      var d3s = 1.0 + 0.14 * (1 - ((x[0].scrollLeft - 500) / 250));
+      d3.style.transform = "scale(" + d3s + ")";
+      var d4s = 1.0 + 0.14 * ((x[0].scrollLeft - 500) / 250);
+      d4.style.transform = "scale(" + d4s + ")";
     }
     else {
       d1.style.transform = "scale(1.0)";
       d2.style.transform = "scale(1.0)";
       d3.style.transform = "scale(1.0)";
+      d4.style.transform = "scale(1.0)";
     }
 
     if (x[0].scrollLeft >= 0 && x[0].scrollLeft <= 10) {
@@ -73,6 +87,13 @@ $(function () {
       b[0].style.display = "block";
       localload.style.display = "none";
     }
+    else if (x[0].scrollLeft >= 740 && x[0].scrollLeft <= 760) {
+      b[0].style.opacity = "1.0";
+      localload.style.opacity = "1.0";
+
+      b[0].style.display = "block";
+      localload.style.display = "none";
+    }
     else {
       b[0].style.opacity = "0.5";
       localload.style.opacity = "0.5";
@@ -90,6 +111,16 @@ $(function () {
     }
     else if (x[0].scrollLeft == 500) {
       window.location.href = '/programming?loaddata=LastRun';
+    }
+    else if (x[0].scrollLeft == 750) {
+      // サンプルは「開く」と同じ経路で読ませる。ファイルの代わりにサーバーから取る
+      fetch('/samples/sample_basic.xml')
+        .then(function (r) { return r.text(); })
+        .then(function (xml) {
+          localStorage.setItem('Local', xml);
+          window.location.href = '/programming?loaddata=Local';
+        })
+        .catch(function () { alert('サンプルを読み込めませんでした'); });
     }
     else {
 

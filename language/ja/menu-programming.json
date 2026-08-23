@@ -1,9 +1,11 @@
 {
-    "CONFIG":"設定",
-    "NEW_DATA":"新 規",
-    "NEW_DATA_INFO":"\r\n新しく\r\nデータを作る",
-    "OPEN_DATA":"開 く",
-    "OPEN_DATA_INFO":"\r\n保存した\r\nデータを開く",
-    "REOPEN_DATA":"再 開",
-    "REOPEN_DATA_INFO":"\r\n前回実行した\r\nデータを開く"
+    "CONFIG": "設定",
+    "NEW_DATA": "新 規",
+    "NEW_DATA_INFO": "\r\n新しく\r\nデータを作る",
+    "OPEN_DATA": "開 く",
+    "OPEN_DATA_INFO": "\r\n保存した\r\nデータを開く",
+    "REOPEN_DATA": "再 開",
+    "REOPEN_DATA_INFO": "\r\n前回実行した\r\nデータを開く",
+    "SAMPLE_DATA": "サンプル",
+    "SAMPLE_DATA_INFO": "\r\n対戦できる\r\nお手本を開く"
 }
