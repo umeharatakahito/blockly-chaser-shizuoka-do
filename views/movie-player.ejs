@@ -24,34 +24,17 @@
       </div>
       <div class="control_area">
         <div class="page_title">
-          <h1><span class="page_title_span"><%- LNG["PAGE_TITLE"] %></span><%= movie ? movie.title : LNG["NOT_FOUND"] %></h1>
+          <h1><span class="page_title_span">試合動画</span><span id="movie_title"></span></h1>
         </div>
         <div class="control_button">
-          <button id="configButton" title="<%- LNG[" CONFIG"] %>"></button>
+          <button id="configButton" title="<%- C_LNG[" CONFIG"] %>"></button>
         </div>
       </div>
     </div>
 
-    <div class="movie_area">
-      <% if (!movie) { %>
-        <div class="movie_empty">
-          <p class="movie_empty_main"><%- LNG["NOT_FOUND"] %></p>
-          <p class="movie_empty_hint"><a href="/movies"><%- LNG["BACK_TO_LIST"] %></a></p>
-        </div>
-      <% } else { %>
-        <div class="movie_player">
-          <video controls preload="metadata" playsinline
-                 src="/movies/file/<%= encodeURIComponent(movie.id) %>">
-            <%- LNG["UNSUPPORTED"] %>
-          </video>
-        </div>
-        <div class="movie_meta">
-          <% if (movie.date) { %><div class="movie_meta_date"><%= movie.date %></div><% } %>
-          <% if (movie.description) { %><p class="movie_meta_desc"><%= movie.description %></p><% } %>
-          <p class="movie_meta_back"><a href="/movies"><%- LNG["BACK_TO_LIST"] %></a></p>
-        </div>
-      <% } %>
-    </div>
+    <div class="movie_area" id="player_root"></div>
+
+    <script src="/javascripts/movie-player.js"></script>
 
 </body>
 

@@ -45,6 +45,8 @@ const PAGES = [
   { view: 'watching', lngFile: null, title: { ja: '観戦', 'ja-k': 'かんせん' } },
   { view: 'tournament', lngFile: null, title: { ja: '対戦表', 'ja-k': 'たいせんひょう' } },
   { view: 'tournament-admin', lngFile: null, title: { ja: 'トーナメントの管理', 'ja-k': 'トーナメントのかんり' } },
+  { view: 'movies', lngFile: null, title: { ja: '動画一覧', 'ja-k': 'どうがいちらん' } },
+  { view: 'movie-player', lngFile: null, title: { ja: '試合動画', 'ja-k': 'しあいどうが' } },
 ];
 
 /**

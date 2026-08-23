@@ -24,41 +24,17 @@
       </div>
       <div class="control_area">
         <div class="page_title">
-          <h1><span class="page_title_span"><%- LNG["PAGE_TITLE"] %></span><%- LNG["LIST_HEADING"] %></h1>
+          <h1><span class="page_title_span">試合動画</span><%- title %></h1>
         </div>
         <div class="control_button">
-          <button id="configButton" title="<%- LNG[" CONFIG"] %>"></button>
+          <button id="configButton" title="<%- C_LNG[" CONFIG"] %>"></button>
         </div>
       </div>
     </div>
 
-    <div class="movie_area">
-      <% if (movies.length === 0) { %>
-        <div class="movie_empty">
-          <p class="movie_empty_main"><%- LNG["EMPTY"] %></p>
-          <p class="movie_empty_hint"><%- LNG["EMPTY_HINT"] %></p>
-        </div>
-      <% } else { %>
-        <ul class="movie_list">
-          <% movies.forEach(function (movie) { %>
-            <li class="movie_card">
-              <a class="movie_card_link" href="/movies/<%= encodeURIComponent(movie.id) %>">
-                <div class="movie_card_body">
-                  <div class="movie_card_title"><%= movie.title %></div>
-                  <% if (movie.date) { %>
-                    <div class="movie_card_date"><%= movie.date %></div>
-                  <% } %>
-                  <% if (movie.description) { %>
-                    <div class="movie_card_desc"><%= movie.description %></div>
-                  <% } %>
-                </div>
-                <div class="movie_card_play" aria-hidden="true">▶</div>
-              </a>
-            </li>
-          <% }); %>
-        </ul>
-      <% } %>
-    </div>
+    <div class="movie_area" id="movie_root"></div>
+
+    <script src="/javascripts/movies.js"></script>
 
 </body>
 

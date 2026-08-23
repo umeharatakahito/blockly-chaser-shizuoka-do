@@ -7,7 +7,8 @@
   "durable_objects": {
     "bindings": [
       { "name": "ROOM", "class_name": "MatchRoom" },
-      { "name": "TOURNAMENT", "class_name": "TournamentStore" }
+      { "name": "TOURNAMENT", "class_name": "TournamentStore" },
+      { "name": "MOVIES_META", "class_name": "MovieStore" }
     ]
   },
 
@@ -21,8 +22,19 @@
     {
       "tag": "v2",
       "new_sqlite_classes": ["TournamentStore"]
+    },
+    {
+      "tag": "v3",
+      "new_sqlite_classes": ["MovieStore"]
     }
   ],
+
+  // 試合動画の保存先。R2 を有効にしてから次を実行すると使えるようになる
+  //   npx wrangler r2 bucket create blockly-chaser-shizuoka-movies
+  // そのうえで下のコメントを外して再デプロイする
+  // "r2_buckets": [
+  //   { "binding": "MOVIES", "bucket_name": "blockly-chaser-shizuoka-movies" }
+  // ],
 
   // Blockly やスタイルシートなどの静的ファイル。
   // run_worker_first を指定しないと Worker より先にファイルが返され、
