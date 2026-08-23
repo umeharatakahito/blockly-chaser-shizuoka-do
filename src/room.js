@@ -67,7 +67,11 @@ export class MatchRoom extends DurableObject {
     const url = new URL(request.url);
 
     if (request.headers.get('Upgrade') === 'websocket') {
-      const roomId = url.searchParams.get('room') || this.#read('room_id', null);
+      // パスからルームID(合言葉つきを含む)を取り出しておく
+      const m = /\/room\/([^/?]+)/.exec(url.pathname);
+      const roomId = (m ? decodeURIComponent(m[1]) : null)
+        || url.searchParams.get('room')
+        || this.#read('room_id', null);
       const pair = new WebSocketPair();
       const [client, server] = Object.values(pair);
 
@@ -139,7 +143,10 @@ export class MatchRoom extends DurableObject {
 
   async #onJoin(ws, msg) {
     const roomId = String(msg.room_id || this.#read('room_id', '') || '');
-    const mapDef = maps[roomId];
+    // 合言葉つきルーム (room_010?ab12cd) は、? の前のマップを使う。
+    // 本家の copyMapByID と同じ扱い
+    const baseId = roomId.split('?')[0];
+    const mapDef = maps[baseId];
 
     if (!mapDef) {
       return this.#emit(ws, 'error', 'サーバーIDが存在しません');

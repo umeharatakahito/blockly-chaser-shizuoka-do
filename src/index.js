@@ -59,9 +59,13 @@ export default {
     const path = url.pathname;
 
     /* --- 試合 --- */
-    const room = /^\/room\/([A-Za-z0-9_-]+)(\/.*)?$/.exec(path);
+    // ルームIDには合言葉が付くことがある (例: room_010?ab12cd)。
+    // クライアントが encodeURIComponent して送ってくるので ? は %3F で届く
+    const room = /^\/room\/([^/]+)(\/.*)?$/.exec(path);
     if (room) {
-      const id = env.ROOM.idFromName(room[1]);
+      const roomId = decodeURIComponent(room[1]);
+      // 合言葉ごとに別のインスタンスにする。同じ合言葉の人だけが同じ試合に入る
+      const id = env.ROOM.idFromName(roomId);
       return env.ROOM.get(id).fetch(request);
     }
 
