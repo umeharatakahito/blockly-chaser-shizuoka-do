@@ -1,8 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import maps from '../src/data/maps.json' with { type: 'json' };
 
 import {
   FLOOR, BLOCK, ITEM, COOL, HOT, BOTH,
@@ -11,8 +9,8 @@ import {
   createState, getReady, walk, look, search, putWall, checkResult,
 } from '../src/game/engine.js';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const loadMap = (f) => JSON.parse(fs.readFileSync(path.join(here, '..', 'load_data', f), 'utf8'));
+/** 同梱のマップ定義を、書き換えても元が壊れないよう複製して返す */
+const loadMap = (roomId) => JSON.parse(JSON.stringify(maps[roomId]));
 
 /**
  * 手で組んだ盤面から状態を作る。
@@ -45,7 +43,7 @@ function board(rows, turn = 100) {
 test('getReady が Node 版の実サーバーと同じ9マスを返す', () => {
   // Node 版で実際に room_010 に入って受け取った値。
   // blockly-chaser-shizuoka の test/game_integration.test.js で固定してある
-  const state = createState(loadMap('game_server_010.json'));
+  const state = createState(loadMap('room_010'));
   assert.deepStrictEqual(getReady(state, 'cool'), [0, 0, 0, 0, 0, 3, 0, 3, 0]);
 });
 
@@ -255,7 +253,7 @@ test('盤の角は2辺が盤外なので囲まれやすい', () => {
 /* --- 状態の生成 --- */
 
 test('createState は元のマップ定義を書き換えない', () => {
-  const def = loadMap('game_server_014.json');
+  const def = loadMap('room_014');
   const before = JSON.stringify(def.map_data);
   const s = createState(def);
   walk(s, 'cool', 'top');
@@ -263,7 +261,7 @@ test('createState は元のマップ定義を書き換えない', () => {
 });
 
 test('createState はスコアを 0 から始める', () => {
-  const s = createState(loadMap('game_server_010.json'));
+  const s = createState(loadMap('room_010'));
   assert.strictEqual(s.cool.score, 0);
   assert.strictEqual(s.hot.score, 0);
   assert.strictEqual(s.turn, 100);

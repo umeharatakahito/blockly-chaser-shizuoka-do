@@ -11,6 +11,7 @@
 import { DurableObject } from 'cloudflare:workers';
 import { TimerQueue } from './timers.js';
 import maps from './data/maps.json' with { type: 'json' };
+import { prepareMap } from './game/generate.js';
 import {
   createMatch, startMatch, requestReady, applyAction, timeout,
   playCpuTurn, boardSnapshot, isTurnOf, CPU_DELAY_MS,
@@ -136,14 +137,12 @@ export class MatchRoom extends DurableObject {
     if (!mapDef) {
       return this.#send(ws, { type: 'error', error: 'ルームが見つかりません: ' + roomId });
     }
-    if (!mapDef.map_data || mapDef.map_data.length === 0) {
-      // 手続き生成のルームはまだ移植していない
-      return this.#send(ws, { type: 'error', error: 'このルームはまだ対応していません: ' + roomId });
-    }
 
     this.#write('room_id', roomId);
 
-    const match = startMatch(createMatch(mapDef, { playerName: String(msg.name || 'player') }));
+    // 盤面が空のルームはここで生成し、座標が未定のルームはここで配置する
+    const prepared = prepareMap(JSON.parse(JSON.stringify(mapDef)));
+    const match = startMatch(createMatch(prepared, { playerName: String(msg.name || 'player') }));
     this.#saveMatch(match);
 
     this.#send(ws, {
