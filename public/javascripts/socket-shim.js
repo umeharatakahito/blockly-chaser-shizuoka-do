@@ -17,7 +17,8 @@
  *
  * 接続はどのルームかが分かってから張る。Durable Objects は URL でインスタンスが
  * 決まるため、ルームIDを知らないうちにつなぐと行き先を選べない。
- * player_join を送った時点で接続し、それまでの送信は溜めておく。
+ * player_join などルームIDを含む最初のイベントを送った時点で接続し、
+ * それまでの送信は溜めておく。
  */
 
 (function (global) {
@@ -97,10 +98,18 @@
   ChaserSocket.prototype.emit = function (event, data) {
     var text = JSON.stringify({ event: event, data: data === undefined ? null : data });
 
-    // どのルームかは player_join で初めて分かる。そこで接続を張る
-    if (event === 'player_join' && data && data.room_id) {
+    // どのルームかは最初の参加イベントで初めて分かる。そこで接続を張る。
+    //   player_join / player_join_match / match_init : { room_id }
+    //   looker_join                                  : ルームIDの文字列
+    var roomId = null;
+    if (event === 'player_join' || event === 'player_join_match' || event === 'match_init') {
+      if (data && data.room_id) roomId = String(data.room_id);
+    } else if (event === 'looker_join') {
+      roomId = typeof data === 'string' ? data : (data && data.room_id ? String(data.room_id) : null);
+    }
+    if (roomId && !this._ws) {
       this._queue.push(text);
-      this._open(String(data.room_id));
+      this._open(roomId);
       return this;
     }
 

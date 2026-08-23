@@ -3,35 +3,65 @@
  *
  * 役割は3つ。
  *   1. /room/<id> の WebSocket を、その試合の Durable Object へ渡す
- *   2. /api/... でマップやチュートリアルのデータを返す
+ *   2. /api/... や /records/... などのデータを返す(多くは Durable Object へ渡す)
  *   3. それ以外は静的ファイル。画面は言語ごとに別ファイルなので振り分ける
  *
  * 状態は一切持たない。試合の状態はすべて Durable Object 側にある。
+ *
+ * 画面の構成:
+ *   通常モード  チュートリアル / 対人対戦 / ボット対戦 / ゴースト対戦 / プログラミング
+ *   大会モード  対戦トーナメント / 試合動画 / エントリー / データアップロード
+ *   運営モード  (鍵つき) 対戦表・動画・エントリー・アップロード・記録の管理
  */
 
 export { MatchRoom } from './room.js';
 export { TournamentStore } from './tournament_do.js';
 export { MovieStore } from './movies_do.js';
+export { RecordStore } from './records_do.js';
 
 import { statusPage } from './status_page.js';
+import { isAdmin, hasAdminKey, login, logout, forbidden, isLocalhost } from './admin.js';
+import { describeLevel, MIN_LEVEL, MAX_LEVEL } from './game/bot.js';
 import maps from './data/maps.json' with { type: 'json' };
 import tutorialData from './data/tutorial.json' with { type: 'json' };
-
 
 const LANGS = ['ja', 'ja-k'];
 const DEFAULT_LANG = 'ja';
 
-/** 画面のパスと、書き出した HTML の名前の対応 */
+/** 誰でも見られる画面。パスと、書き出した HTML の名前の対応 */
 const PAGES = {
   '/': 'index',
   '/menu-tutorial': 'menu-tutorial',
   '/menu-programming': 'menu-programming',
-  '/menu-programming-exp': 'menu-programming-exp',
-  '/menu-match': 'menu-match',
   '/programming': 'programming',
-  '/programming-exp': 'programming-exp',
+  '/vs': 'menu-match',
+  '/menu-match': 'menu-match',
+  '/bot': 'menu-bot',
+  '/ghost': 'menu-ghost',
   '/match': 'match',
+  '/match/player': 'match-player',
+  '/match/cpu': 'match-cpu',
   '/watching': 'watching',
+  '/tournament': 'tournament',
+  '/movies': 'movies',
+  '/entry': 'entry',
+  '/upload': 'upload',
+  '/admin': 'admin',
+};
+
+/** 運営モードの画面。鍵が無いとログイン画面へ */
+const ADMIN_PAGES = {
+  '/tournament/admin': 'tournament-admin',
+  '/movies/admin': 'movies-admin',
+  '/admin/entries': 'admin-entries',
+  '/admin/uploads': 'admin-uploads',
+  '/admin/records': 'admin-records',
+};
+
+/** 古いパス。統合・改名した画面へ飛ばす */
+const REDIRECTS = {
+  '/menu-programming-exp': '/menu-programming',
+  '/programming-exp': '/programming',
 };
 
 /** Cookie から言語を読む。未知の値なら既定 */
@@ -49,6 +79,12 @@ function page(request, env, lng, name) {
   return env.ASSETS.fetch(new Request(url, request));
 }
 
+function redirect(url, to) {
+  const dest = new URL(to, url);
+  dest.search = url.search;
+  return Response.redirect(dest.toString(), 302);
+}
+
 /** 一覧に出すルーム。合言葉つきや一時ルームは除く(本家と同じ扱い) */
 function joinList() {
   return Object.values(maps)
@@ -56,29 +92,49 @@ function joinList() {
     .map((m) => [(m.cpu ? 'AUTO: ' : 'VS: ') + m.name, m.room_id]);
 }
 
-/**
- * 試合動画。
- *
- * 動画そのものは預からず、URL だけを保存する。
- * 保存領域(R2)を用意する必要がなく、支払い方法の登録もいらない。
- */
-async function handleMovies(request, env, path) {
-  const store = env.MOVIES_META.get(env.MOVIES_META.idFromName('main'));
-
-  // 目録の読み書き
-  if (path === '/movies/list' || path === '/movies/admin-list'
-      || (request.method === 'POST' && /^\/movies\/(save|hide|show|remove)$/.test(path))) {
-    return store.fetch(request);
-  }
-
-  // 画面
-  const lng = pickLang(request);
-  if (path === '/movies') return page(request, env, lng, 'movies');
-  if (path === '/movies/admin') return page(request, env, lng, 'movies-admin');
-  if (/^\/movies\/[^/]+$/.test(path)) return page(request, env, lng, 'movie-player');
-
-  return null;
+function botLevels() {
+  const levels = [];
+  for (let L = MIN_LEVEL; L <= MAX_LEVEL; L++) levels.push({ level: L, description: describeLevel(L) });
+  return levels;
 }
+
+/* ------------------------------------------------------------ データの振り分け */
+
+/**
+ * Durable Object へ渡すデータ要求。
+ * admin: true のものは運営の鍵が要る。
+ */
+const DATA_ROUTES = [
+  // 対戦表
+  { binding: 'TOURNAMENT', method: 'GET', path: '/tournament/data' },
+  { binding: 'TOURNAMENT', method: 'GET', path: '/tournament/admin-data', admin: true },
+  { binding: 'TOURNAMENT', method: 'POST', re: /^\/tournament\/(title|players\/add|players\/remove|build|reset|result|import)$/, admin: true },
+  // 試合動画
+  { binding: 'MOVIES_META', method: 'GET', path: '/movies/list' },
+  { binding: 'MOVIES_META', method: 'GET', path: '/movies/admin-list', admin: true },
+  { binding: 'MOVIES_META', method: 'POST', re: /^\/movies\/(save|hide|show|remove)$/, admin: true },
+  // ボット対戦の記録
+  { binding: 'RECORDS', method: 'GET', re: /^\/records\/(ghosts|ghost|ranking)$/ },
+  { binding: 'RECORDS', method: 'GET', path: '/records/admin-list', admin: true },
+  { binding: 'RECORDS', method: 'POST', path: '/records/name' },
+  { binding: 'RECORDS', method: 'POST', re: /^\/records\/(hide|show|remove)$/, admin: true },
+  // エントリー
+  { binding: 'RECORDS', method: 'GET', path: '/entry/list' },
+  { binding: 'RECORDS', method: 'POST', path: '/entry/add' },
+  { binding: 'RECORDS', method: 'GET', path: '/entry/admin-list', admin: true },
+  { binding: 'RECORDS', method: 'POST', re: /^\/entry\/(update|hide|show|remove)$/, admin: true },
+  // アップロード
+  { binding: 'RECORDS', method: 'GET', path: '/upload/list' },
+  { binding: 'RECORDS', method: 'POST', path: '/upload/add' },
+  { binding: 'RECORDS', method: 'GET', re: /^\/upload\/(admin-list|file)$/, admin: true },
+  { binding: 'RECORDS', method: 'POST', path: '/upload/remove', admin: true },
+];
+
+function findDataRoute(method, path) {
+  return DATA_ROUTES.find((r) => r.method === method && (r.path ? r.path === path : r.re.test(path))) || null;
+}
+
+/* ------------------------------------------------------------ 入口 */
 
 export default {
   async fetch(request, env) {
@@ -106,29 +162,30 @@ export default {
     }
 
     if (path === '/api/tutorial') return Response.json(tutorialData.tutorial);
-
     if (path === '/api/bgm') return Response.json([]);
+    if (path === '/api/bot-levels') return Response.json(botLevels());
 
-    /* --- 対戦表 --- */
-    if (path.startsWith('/tournament')) {
-      const store = env.TOURNAMENT.get(env.TOURNAMENT.idFromName('main'));
-
-      // データのやりとりは Durable Object へ渡す
-      if (path === '/tournament/data' || path === '/tournament/admin-data'
-          || (request.method === 'POST' && path.startsWith('/tournament/'))) {
-        return store.fetch(request);
-      }
-
-      // 画面
-      const lngT = pickLang(request);
-      if (path === '/tournament') return page(request, env, lngT, 'tournament');
-      if (path === '/tournament/admin') return page(request, env, lngT, 'tournament-admin');
+    /* --- 運営の鍵 --- */
+    if (path === '/admin/status') {
+      return Response.json({
+        admin: await isAdmin(request, env),
+        keyConfigured: hasAdminKey(env),
+        localhost: isLocalhost(request),
+      });
     }
+    if (path === '/admin/login' && request.method === 'POST') {
+      const body = await request.json().catch(() => ({}));
+      const res = await login(request, env, body.key);
+      return res || Response.json({ ok: false, error: '鍵が違います' }, { status: 403 });
+    }
+    if (path === '/admin/logout' && request.method === 'POST') return logout();
 
-    /* --- 試合動画 --- */
-    if (path.startsWith('/movies')) {
-      const res = await handleMovies(request, env, path);
-      if (res) return res;
+    /* --- Durable Object へ渡すデータ --- */
+    const route = findDataRoute(request.method, path);
+    if (route) {
+      if (route.admin && !(await isAdmin(request, env))) return forbidden();
+      const store = env[route.binding].get(env[route.binding].idFromName('main'));
+      return store.fetch(request);
     }
 
     if (path === '/health') {
@@ -137,6 +194,7 @@ export default {
         service: 'blockly-chaser-shizuoka-do',
         rooms: Object.keys(maps).length,
         stages: Object.keys(tutorialData.tutorial).length,
+        adminKey: hasAdminKey(env),
       });
     }
 
@@ -147,7 +205,18 @@ export default {
     /* --- 画面 --- */
     const lng = pickLang(request);
 
+    if (REDIRECTS[path]) return redirect(url, REDIRECTS[path]);
+
     if (PAGES[path] !== undefined) return page(request, env, lng, PAGES[path]);
+
+    if (ADMIN_PAGES[path] !== undefined) {
+      if (!(await isAdmin(request, env))) {
+        const dest = new URL('/admin', url);
+        dest.searchParams.set('next', path);
+        return Response.redirect(dest.toString(), 302);
+      }
+      return page(request, env, lng, ADMIN_PAGES[path]);
+    }
 
     // チュートリアルはステージごとに1ページある
     if (path === '/tutorial') {
@@ -158,12 +227,8 @@ export default {
       return page(request, env, lng, 'menu-tutorial');
     }
 
-    // 対戦画面は、そのルームに CPU がいるかで分かれる
-    if (path === '/match/player') {
-      const roomId = url.searchParams.get('room_id');
-      const def = roomId ? maps[roomId.split('?')[0]] : null;
-      return page(request, env, lng, def && def.cpu ? 'match-cpu' : 'match-player');
-    }
+    // 動画の再生画面
+    if (/^\/movies\/[^/]+$/.test(path)) return page(request, env, lng, 'movie-player');
 
     /* --- 静的ファイル --- */
     if (env.ASSETS) return env.ASSETS.fetch(request);

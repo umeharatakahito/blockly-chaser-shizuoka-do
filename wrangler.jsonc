@@ -8,7 +8,8 @@
     "bindings": [
       { "name": "ROOM", "class_name": "MatchRoom" },
       { "name": "TOURNAMENT", "class_name": "TournamentStore" },
-      { "name": "MOVIES_META", "class_name": "MovieStore" }
+      { "name": "MOVIES_META", "class_name": "MovieStore" },
+      { "name": "RECORDS", "class_name": "RecordStore" }
     ]
   },
 
@@ -26,6 +27,10 @@
     {
       "tag": "v3",
       "new_sqlite_classes": ["MovieStore"]
+    },
+    {
+      "tag": "v4",
+      "new_sqlite_classes": ["RecordStore"]
     }
   ],
 
@@ -46,7 +51,13 @@
     // 既定の "拡張子なしURLへリダイレクト" が働くと 307 になってしまうため切る
     "html_handling": "none",
     "not_found_handling": "none",
-    "run_worker_first": ["/room/*", "/health", "/api/*", "/tournament*", "/movies*"]
+    // 画面のパスは public/ に同名のファイルが無いので、Worker が先に受ける。
+    // ここに書いたもの以外は静的ファイルが先に探される
+    "run_worker_first": [
+      "/room/*", "/health", "/status", "/api/*",
+      "/tournament*", "/movies*", "/records/*", "/entry*", "/upload*", "/admin*",
+      "/", "/menu-*", "/programming*", "/vs", "/bot", "/ghost", "/match*", "/watching", "/tutorial"
+    ]
   },
 
   "observability": { "enabled": true }

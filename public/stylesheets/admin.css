@@ -256,3 +256,109 @@
 }
 
 .admin_match.is_waiting .admin_match_players { color: #a0a0a0; }
+
+/* --- 一覧表 (エントリー・アップロード・記録) --- */
+
+.admin_table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.admin_table th,
+.admin_table td {
+  border: none;
+  border-bottom: solid 1px #eee;
+  padding: 8px 6px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+.admin_table th {
+  color: #777;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.admin_table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.admin_table .muted {
+  color: #999;
+}
+
+.admin_table tr.hidden_row td {
+  color: #aaa;
+  text-decoration: line-through;
+}
+
+.admin_small_button {
+  padding: 4px 10px;
+  border: solid 1px #c9c9c9;
+  background: #fff;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.admin_small_button:hover { background: #f0f0f0; }
+.admin_small_button.danger { color: #c2483e; border-color: #e8b4af; }
+
+.admin_links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin_link_card {
+  display: block;
+  flex: 1 1 200px;
+  text-decoration: none;
+  background: #f7fbfe;
+  border: solid 1px #cfe8f7;
+  border-radius: 10px;
+  padding: 16px;
+  color: #00639a;
+}
+
+.admin_link_card:hover { background: #e9f4fb; }
+
+.admin_link_card strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.admin_link_card span {
+  font-size: 13px;
+  color: #555;
+}
+
+.admin_field label {
+  display: block;
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.admin_field_row {
+  display: flex;
+  gap: 12px;
+}
+
+.admin_field_row .admin_field { flex: 1; }
+
+.admin_inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin_area .content { overflow: auto; }
+body.admin_body { overflow: auto; }

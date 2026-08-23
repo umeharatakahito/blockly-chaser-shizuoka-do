@@ -8,11 +8,12 @@
  */
 
 const BASE = process.argv[2] ?? 'http://localhost:8787';
-const ROOM = process.argv[3] ?? 'room_010';
+// 合言葉つき (room_110?abc) も受け付ける。URL には encodeURIComponent して載せる
+const ROOM = decodeURIComponent(process.argv[3] ?? 'room_010');
 const WALL = 2;
 const DIR_INDEX = { top: 1, left: 3, right: 5, bottom: 7 };
 
-const ws = new WebSocket(`${BASE.replace(/^http/, 'ws')}/room/${ROOM}`);
+const ws = new WebSocket(`${BASE.replace(/^http/, 'ws')}/room/${encodeURIComponent(ROOM)}`);
 let turns = 0;
 let finished = false;
 const t0 = Date.now();

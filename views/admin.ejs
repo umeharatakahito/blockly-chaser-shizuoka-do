@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%- include('./common/page-head', {pageTitle: 'CHaser 運営メニュー'}) %>
+</head>
+
+<body class="admin_body">
+
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/"></a></div>
+    </div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">運営</span><%- title %></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin_area">
+    <div id="notice"></div>
+
+    <!-- 鍵が無いときのログイン -->
+    <div class="admin_card admin_login" id="login_card" style="display:none">
+      <h2 class="admin_card_title">運営の鍵を入力してください</h2>
+      <input class="admin_input" type="password" id="key" placeholder="鍵" autocomplete="current-password">
+      <button class="admin_button" id="login">入る</button>
+      <p class="admin_note" id="login_help"></p>
+    </div>
+
+    <!-- 鍵が通ったあとのメニュー -->
+    <div id="menu" style="display:none">
+      <div class="admin_card">
+        <h2 class="admin_card_title">大会の運営</h2>
+        <div class="admin_links">
+          <a class="admin_link_card" href="/tournament/admin"><strong>対戦表の管理</strong><span>参加者の登録・トーナメントの作成・結果の確定</span></a>
+          <a class="admin_link_card" href="/admin/entries"><strong>エントリー一覧</strong><span>参加者のエントリーを確認し、対戦表へ取り込む</span></a>
+          <a class="admin_link_card" href="/admin/uploads"><strong>提出プログラム</strong><span>参加者が提出した .blch をダウンロードする</span></a>
+          <a class="admin_link_card" href="/movies/admin"><strong>試合動画の管理</strong><span>YouTube などの URL を登録する</span></a>
+        </div>
+      </div>
+      <div class="admin_card">
+        <h2 class="admin_card_title">試合を行う</h2>
+        <div class="admin_links">
+          <a class="admin_link_card" href="/vs"><strong>対戦を実行する</strong><span>マップを選び、両選手の .blch を読み込んで試合をする。結果は対戦表の候補に自動で記録されます</span></a>
+          <a class="admin_link_card" href="/watching"><strong>観戦</strong><span>進行中の試合を別の画面で映す</span></a>
+        </div>
+      </div>
+      <div class="admin_card">
+        <h2 class="admin_card_title">通常モードの記録</h2>
+        <div class="admin_links">
+          <a class="admin_link_card" href="/admin/records"><strong>ボット対戦の記録</strong><span>ランキング・ゴーストの名前を確認し、不適切なものを消す</span></a>
+        </div>
+      </div>
+      <div class="admin_card">
+        <div class="admin_inline">
+          <span class="admin_note" id="key_status"></span>
+          <button class="admin_small_button" id="logout">運営モードを抜ける</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/javascripts/admin.js"></script>
+
+</body>
+
+</html>

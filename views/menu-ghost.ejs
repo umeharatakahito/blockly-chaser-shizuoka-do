@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <title>CHaser ゴースト対戦</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='/stylesheets/menu-watching.css' />
+  <link rel='stylesheet' href='/stylesheets/menu-pick.css' />
+  <link rel='stylesheet' href='/stylesheets/animation.css' />
+  <%- include('./common/config-init') %>
+</head>
+
+<body>
+  <%- include('./common/config', {LNG: C_LNG}) %>
+
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/"></a></div>
+    </div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">ゴースト対戦</span><%- title %></h1>
+      </div>
+      <div class="control_button">
+        <button id="configButton" title="<%- C_LNG["CONFIG"] %>"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="pick_area">
+      <div class="pick_left">
+        <div class="pick_card">
+          <h2>ゴーストを選ぶ</h2>
+          <div style="margin-bottom:8px">
+            <label><input type="checkbox" id="show_all"> 負けた記録も見せる</label>
+          </div>
+          <div id="ghost_list" class="pick_list"></div>
+        </div>
+      </div>
+
+      <div class="pick_right">
+        <div class="pick_card">
+          <h2>対戦する</h2>
+          <div id="map_preview"></div>
+          <div id="ghost_info" class="pick_note"></div>
+          <button id="go_button" class="pick_go" disabled>ゴーストを選んでください</button>
+          <div class="pick_note">
+            ゴーストは、だれかがボット対戦で動かしたプログラムの「手」をそのままなぞります。<br>
+            ゴーストが cool(先攻)、あなたは hot(後攻)です。次の画面で .blch を読み込んでください。<br>
+            記録した手が尽きたあとは、そのとき戦ったボットと同じ強さで動きます。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/javascripts/map_preview.js"></script>
+  <script src="/javascripts/menu-ghost.js"></script>
+</body>
+
+</html>

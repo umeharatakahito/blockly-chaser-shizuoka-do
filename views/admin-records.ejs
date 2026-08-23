@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%- include('./common/page-head', {pageTitle: 'CHaser ボット対戦の記録'}) %>
+</head>
+
+<body class="admin_body">
+
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/admin"></a></div>
+    </div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">運営</span><%- title %></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin_area">
+    <div id="notice"></div>
+    <div class="admin_card">
+      <h2 class="admin_card_title">ボット対戦の記録 <span id="record_count"></span></h2>
+      <p class="admin_note">
+        ランキングとゴーストに出る名前です。不適切な名前は「非表示」か「削除」してください。
+        名前の検査(卑猥な語)は登録時に自動でかかっていますが、すり抜けたものはここで止められます。
+      </p>
+      <div id="record_list"></div>
+    </div>
+  </div>
+
+  <script src="/javascripts/admin-records.js"></script>
+
+</body>
+
+</html>

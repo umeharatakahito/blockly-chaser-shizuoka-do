@@ -9,5 +9,9 @@
     "MOVIES_INFO": "過去の試合を見てみよう！",
     "MOVIES_TITLE": "試合動画",
     "BRACKET_INFO": "だれが勝ち上がる？",
-    "BRACKET_TITLE": "対戦表"
+    "BRACKET_TITLE": "対戦表",
+    "BOT_INFO": "L1〜L30 のボットに挑戦！",
+    "GHOST_INFO": "だれかの記録と戦おう！",
+    "ENTRY_INFO": "大会に参加しよう！",
+    "UPLOAD_INFO": "プログラムを提出しよう！"
 }

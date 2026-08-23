@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%- include('./common/page-head', {pageTitle: 'CHaser エントリー一覧'}) %>
+</head>
+
+<body class="admin_body">
+
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/admin"></a></div>
+    </div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">運営</span><%- title %></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin_area">
+    <div id="notice"></div>
+
+    <div class="admin_card">
+      <h2 class="admin_card_title">エントリー一覧 <span id="entry_count"></span></h2>
+      <p class="admin_note">
+        「対戦表へ取り込む」を押すと、表示中(非表示にしていない)の全員を対戦表の参加者に追加します。
+        すでに同じ名前がいる人は飛ばします。そのあと
+        <a href="/tournament/admin">対戦表の管理</a> でトーナメントを作ってください。
+      </p>
+      <div class="admin_inline">
+        <button class="admin_button" id="import_all">対戦表へ取り込む</button>
+        <button class="admin_small_button" id="download_csv">CSV をダウンロード</button>
+      </div>
+      <div id="entry_list" style="margin-top:16px"></div>
+    </div>
+
+    <div class="admin_card">
+      <h2 class="admin_card_title">運営が手で追加する</h2>
+      <div class="admin_field_row">
+        <div class="admin_field"><label>選手名</label><input class="admin_text" id="add_name" maxlength="20"></div>
+        <div class="admin_field"><label>学校・所属</label><input class="admin_text" id="add_school" maxlength="50"></div>
+        <div class="admin_field"><label>学年</label><input class="admin_text" id="add_grade" maxlength="20"></div>
+      </div>
+      <button class="admin_button" id="add">追加する</button>
+    </div>
+  </div>
+
+  <script src="/javascripts/admin-entries.js"></script>
+
+</body>
+
+</html>

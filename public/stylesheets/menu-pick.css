@@ -1,0 +1,215 @@
+/*
+ * ボット対戦 / ゴースト対戦 のメニュー。
+ * 左に選ぶもの(マップやゴースト)、右に内容と決定ボタン。
+ */
+
+.content {
+  overflow: auto;
+}
+
+.pick_area {
+  max-width: 1000px;
+  margin: 20px auto 60px;
+  padding: 0 16px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  color: #4d4d4d;
+}
+
+.pick_left {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+
+.pick_right {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+
+.pick_card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+
+.pick_card h2 {
+  margin: 0 0 12px;
+  font-size: 17px;
+  color: #00639a;
+  border-bottom: solid 2px #cfe8f7;
+  padding-bottom: 6px;
+}
+
+.pick_list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 420px;
+  overflow: auto;
+}
+
+.pick_item {
+  border: solid 2px #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  background: #fafafa;
+}
+
+.pick_item:hover {
+  border-color: #70c7ff;
+}
+
+.pick_item.on {
+  border-color: #ff4e38;
+  background: #fff3f0;
+}
+
+.pick_item_name {
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.pick_item_sub {
+  font-size: 12px;
+  color: #777;
+  white-space: nowrap;
+}
+
+.pick_badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  background: #4caf50;
+  border-radius: 10px;
+  padding: 1px 8px;
+  margin-right: 6px;
+}
+
+.pick_badge.ghost {
+  background: #7e57c2;
+}
+
+#map_preview table {
+  height: auto;
+  width: 100%;
+  max-width: 300px;
+}
+
+#map_preview td {
+  width: 16px;
+  height: 16px;
+}
+
+.level_row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.level_row input[type="range"] {
+  flex: 1;
+}
+
+.level_value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #2e7d32;
+  min-width: 70px;
+  text-align: center;
+}
+
+.level_desc {
+  font-size: 14px;
+  color: #555;
+  min-height: 20px;
+  margin-bottom: 6px;
+}
+
+.level_quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.level_quick button {
+  border: solid 1px #c9c9c9;
+  background: #fff;
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.level_quick button.on {
+  background: #2e7d32;
+  color: #fff;
+  border-color: #2e7d32;
+}
+
+.pick_go {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #ff4e38;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.pick_go:disabled {
+  background: #bbb;
+  cursor: default;
+}
+
+.pick_note {
+  font-size: 12px;
+  color: #777;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.rank_table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.rank_table th,
+.rank_table td {
+  border: none;
+  border-bottom: solid 1px #eee;
+  padding: 6px 6px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 13px;
+}
+
+.rank_table th {
+  color: #777;
+  font-weight: normal;
+}
+
+.rank_table td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.empty_note {
+  color: #888;
+  font-size: 14px;
+  padding: 10px 0;
+}

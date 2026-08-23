@@ -35,10 +35,10 @@ const PAGES = [
   { view: 'index', lngFile: 'index', title: { ja: 'メニュー', 'ja-k': 'メニュー' } },
   { view: 'menu-tutorial', lngFile: 'menu-tutorial', title: { ja: 'ステージ選択', 'ja-k': 'ステージせんたく' } },
   { view: 'menu-programming', lngFile: 'menu-programming', title: { ja: 'データ選択', 'ja-k': 'データせんたく' } },
-  { view: 'menu-programming-exp', lngFile: 'menu-programming', title: { ja: 'データ選択', 'ja-k': 'データせんたく' } },
   { view: 'menu-match', lngFile: 'menu-watching', title: { ja: 'ルーム選択', 'ja-k': 'ルームせんたく' } },
+  { view: 'menu-bot', lngFile: null, title: { ja: 'ボット対戦', 'ja-k': 'ボットたいせん' } },
+  { view: 'menu-ghost', lngFile: null, title: { ja: 'ゴースト対戦', 'ja-k': 'ゴーストたいせん' } },
   { view: 'programming', lngFile: 'programming', title: { ja: 'プログラミング', 'ja-k': 'プログラミング' } },
-  { view: 'programming-exp', lngFile: 'programming', title: { ja: 'プログラミング', 'ja-k': 'プログラミング' } },
   { view: 'match', lngFile: null, title: { ja: '対戦', 'ja-k': 'たいせん' } },
   { view: 'match-cpu', lngFile: null, title: { ja: '対戦', 'ja-k': 'たいせん' } },
   { view: 'match-player', lngFile: null, title: { ja: '対戦', 'ja-k': 'たいせん' } },
@@ -48,6 +48,12 @@ const PAGES = [
   { view: 'movies', lngFile: null, title: { ja: '動画一覧', 'ja-k': 'どうがいちらん' } },
   { view: 'movie-player', lngFile: null, title: { ja: '試合動画', 'ja-k': 'しあいどうが' } },
   { view: 'movies-admin', lngFile: null, title: { ja: '試合動画の管理', 'ja-k': 'しあいどうがのかんり' } },
+  { view: 'entry', lngFile: null, title: { ja: 'エントリー', 'ja-k': 'エントリー' } },
+  { view: 'upload', lngFile: null, title: { ja: 'データアップロード', 'ja-k': 'データアップロード' } },
+  { view: 'admin', lngFile: null, title: { ja: '運営メニュー', 'ja-k': '運営メニュー' } },
+  { view: 'admin-entries', lngFile: null, title: { ja: 'エントリー一覧', 'ja-k': 'エントリー一覧' } },
+  { view: 'admin-uploads', lngFile: null, title: { ja: '提出プログラム', 'ja-k': '提出プログラム' } },
+  { view: 'admin-records', lngFile: null, title: { ja: 'ボット対戦の記録', 'ja-k': 'ボット対戦の記録' } },
 ];
 
 /**

@@ -1,0 +1,127 @@
+/*
+ * トップメニュー。通常モード / 大会モード / 運営モード の3段構成。
+ * 本家の 2 カラム固定レイアウトは項目が増えて収まらないので、横幅に応じて折り返す形にした。
+ */
+
+.content {
+  overflow: auto;
+}
+
+.top_menu {
+  max-width: 1000px;
+  margin: 30px auto 60px;
+  padding: 0 16px;
+}
+
+.mode {
+  border: solid 2px #fff;
+  border-radius: 12px;
+  padding: 14px 18px 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.mode_normal {
+  background: linear-gradient(0deg, rgba(255, 241, 0, 0.35) 0%, rgba(0, 160, 230, 0.35) 100%);
+}
+
+.mode_contest {
+  background: rgba(244, 67, 54, 0.18);
+}
+
+.mode_admin {
+  background: rgba(93, 93, 93, 0.18);
+}
+
+.mode_title {
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: #3d3d3d;
+  text-shadow: 1px 1px 0 #fff;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.mode_title small {
+  font-size: 13px;
+  color: #6d6d6d;
+  font-weight: normal;
+}
+
+.mode_cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.card {
+  display: block;
+  width: 170px;
+  height: 112px;
+  text-decoration: none;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0px 1px 2px 1px #7d7d7d;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.1s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.card_info {
+  text-align: center;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px #5d5d5d;
+  color: #fff;
+  margin: 4px;
+  padding: 3px 0;
+  background-size: 14px 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card_title {
+  color: #fff;
+  text-shadow: 2px 2px 2px #5d5d5d;
+  padding: 8px 5px 0 5px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.card_en {
+  color: #fff;
+  text-shadow: 2px 2px 2px #5d5d5d;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 色違い。背景色と、上の帯の縞模様 */
+.card_blue { background: #00a0e6; }
+.card_blue .card_info { background: repeating-linear-gradient(-45deg, #9cd0f5 0 7px, #3faef7 7px 14px); }
+
+.card_yellow { background: #ffc107; }
+.card_yellow .card_info { background: repeating-linear-gradient(-45deg, #ffeb3b 0 7px, #ffc107 7px 14px); }
+
+.card_red { background: #f44336; }
+.card_red .card_info { background: repeating-linear-gradient(-45deg, #ff2b1e 0 7px, #ff7a70 7px 14px); }
+
+.card_green { background: #4caf50; }
+.card_green .card_info { background: repeating-linear-gradient(-45deg, #81c784 0 7px, #43a047 7px 14px); }
+
+.card_purple { background: #7e57c2; }
+.card_purple .card_info { background: repeating-linear-gradient(-45deg, #b39ddb 0 7px, #673ab7 7px 14px); }
+
+.card_orange { background: #ff7043; }
+.card_orange .card_info { background: repeating-linear-gradient(-45deg, #ffab91 0 7px, #f4511e 7px 14px); }
+
+.card_gray { background: #5d5d5d; }
+.card_gray .card_info { background: repeating-linear-gradient(-45deg, #9e9e9e 0 7px, #616161 7px 14px); }

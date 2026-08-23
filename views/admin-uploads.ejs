@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%- include('./common/page-head', {pageTitle: 'CHaser 提出プログラム'}) %>
+</head>
+
+<body class="admin_body">
+
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/admin"></a></div>
+    </div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">運営</span><%- title %></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin_area">
+    <div id="notice"></div>
+
+    <div class="admin_card">
+      <h2 class="admin_card_title">提出されたプログラム <span id="upload_count"></span></h2>
+      <p class="admin_note">
+        選手ごとに、いちばん新しい提出を太字にしています。対戦画面でこのファイルを読み込んで試合をしてください。
+      </p>
+      <div class="admin_inline">
+        <label><input type="checkbox" id="latest_only" checked> 最新のものだけ表示</label>
+      </div>
+      <div id="upload_list" style="margin-top:16px"></div>
+    </div>
+
+    <div class="admin_card">
+      <h2 class="admin_card_title">運営の一括データ</h2>
+      <p class="admin_note">
+        対戦表の JSON(書き出したもの)や、参加者名簿の CSV を取り込めます。
+        CSV は1行1人で、1列目が選手名、2列目が学校・所属です(見出し行があっても構いません)。
+      </p>
+      <div class="admin_field">
+        <label for="bulk_file">ファイル (.json / .csv)</label>
+        <input class="admin_text" type="file" id="bulk_file" accept=".json,.csv,.txt">
+      </div>
+      <button class="admin_button" id="bulk_import">取り込む</button>
+    </div>
+  </div>
+
+  <script src="/javascripts/admin-uploads.js"></script>
+
+</body>
+
+</html>

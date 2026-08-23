@@ -3,10 +3,11 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Blockly CHaser</title>
+  <title>Blockly CHaser 静岡</title>
   <link rel="icon" href="/images/favicon.ico">
   <link rel='stylesheet' href='/stylesheets/style.css' />
   <link rel='stylesheet' href='/stylesheets/menu.css' />
+  <link rel='stylesheet' href='/stylesheets/menu-top.css' />
   <link rel='stylesheet' href='/stylesheets/animation.css' />
   <%- include('./common/config-init') %>
 </head>
@@ -14,132 +15,94 @@
 <body>
   <%- include('./common/config', {LNG: C_LNG}) %>
 
-    <div class="header">
-
-      <div class="back_page">
-
+  <div class="header">
+    <div class="back_page"></div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">メニュー</span><%- title %></h1>
       </div>
-      <div class="control_area">
-        <div class="page_title">
-          <h1><span class="page_title_span">メニュー</span><%- title %></h1>
-        </div>
-        <div class="control_button">
-          <button id="configButton" title="<%- LNG[" CONFIG"] %>"></button>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="content">
-
-      <div class="main">
-        <div class="left">
-          <div class="wrapper_l">
-            <div class="menu_tutorial">
-              <a href="/menu-tutorial"></a>
-              <div class="menu_tutorial_info">
-                <%- LNG["TUTORIAL_INFO"] %>
-              </div>
-              <div class="menu_tutorial_title">
-                チュートリアル
-              </div>
-              <div class="menu_tutorial_title_en">
-                Tutorial
-              </div>
-            </div>
-          </div>
-          <div class="wrapper_l">
-            <div class="menu_watching">
-              <a href="/menu-match"></a>
-              <div class="menu_watching_info">
-                <%- LNG["MATCH_INFO"] %>
-              </div>
-              <div class="menu_watching_title">
-                <%- LNG["MATCH_TITLE"] %>
-              </div>
-              <div class="menu_programming_title_en">
-                Match
-              </div>
-            </div>
-          </div>
-          <div class="wrapper_l">
-            <div class="menu_bracket">
-              <a href="/tournament"></a>
-              <div class="menu_bracket_info">
-                <%- LNG["BRACKET_INFO"] %>
-              </div>
-              <div class="menu_bracket_title">
-                <%- LNG["BRACKET_TITLE"] %>
-              </div>
-              <div class="menu_bracket_title_en">
-                Bracket
-              </div>
-            </div>
-          </div>
-          <div class="wrapper_l">
-            <div class="menu_movies">
-              <a href="/movies"></a>
-              <div class="menu_movies_info">
-                <%- LNG["MOVIES_INFO"] %>
-              </div>
-              <div class="menu_movies_title">
-                <%- LNG["MOVIES_TITLE"] %>
-              </div>
-              <div class="menu_movies_title_en">
-                Movies
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="right">
-          <div class="wrapper_r">
-            <div class="menu_programming">
-              <div class="menu_programming_info">
-                <%- LNG["PROGRAMMING_INFO"] %>
-              </div>
-              <div class="menu_programming_title">
-                プログラミング
-              </div>
-              <div class="menu_programming_title_en">
-                Programming
-              </div>
-              <div>
-                <div class="wrapper_c">
-                  <div class="menu_tutorial">
-                    <a href="/menu-programming"></a>
-                    <div class="menu_tutorial_info">
-                      指揮官への入り口
-                    </div>
-                    <div class="menu_tutorial_title">
-                      初級編
-                    </div>
-                    <div class="menu_tutorial_title_en">
-                      Basic
-                    </div>
-                  </div>
-                </div>
-                <div class="wrapper_c">
-                  <div class="menu_watching">
-                    <a href="/menu-programming-exp"></a>
-                    <div class="menu_watching_info">
-                      更に向こうへ!!
-                    </div>
-                    <div class="menu_watching_title">
-                      上級編
-                    </div>
-                    <div class="menu_programming_title_en">
-                      Expert
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+      <div class="control_button">
+        <button id="configButton" title="<%- LNG["CONFIG"] %>"></button>
       </div>
     </div>
+  </div>
+
+  <div class="content">
+    <div class="top_menu">
+
+      <!-- 通常モード -->
+      <section class="mode mode_normal">
+        <h2 class="mode_title"><span>通常モード</span><small>Play</small></h2>
+        <div class="mode_cards">
+          <a class="card card_blue" href="/menu-tutorial">
+            <div class="card_info"><%- LNG["TUTORIAL_INFO"] %></div>
+            <div class="card_title">チュートリアル</div>
+            <div class="card_en">Tutorial</div>
+          </a>
+          <a class="card card_yellow" href="/menu-programming">
+            <div class="card_info"><%- LNG["PROGRAMMING_INFO"] %></div>
+            <div class="card_title">プログラミング</div>
+            <div class="card_en">Programming</div>
+          </a>
+          <a class="card card_red" href="/vs">
+            <div class="card_info"><%- LNG["MATCH_INFO"] %></div>
+            <div class="card_title">対人対戦</div>
+            <div class="card_en">VS Match</div>
+          </a>
+          <a class="card card_green" href="/bot">
+            <div class="card_info"><%- LNG["BOT_INFO"] %></div>
+            <div class="card_title">ボット対戦</div>
+            <div class="card_en">Bot L1 - L30</div>
+          </a>
+          <a class="card card_purple" href="/ghost">
+            <div class="card_info"><%- LNG["GHOST_INFO"] %></div>
+            <div class="card_title">ゴースト対戦</div>
+            <div class="card_en">Ghost</div>
+          </a>
+        </div>
+      </section>
+
+      <!-- 大会モード -->
+      <section class="mode mode_contest">
+        <h2 class="mode_title"><span>大会モード</span><small>Contest</small></h2>
+        <div class="mode_cards">
+          <a class="card card_orange" href="/tournament">
+            <div class="card_info"><%- LNG["BRACKET_INFO"] %></div>
+            <div class="card_title">対戦トーナメント</div>
+            <div class="card_en">Bracket</div>
+          </a>
+          <a class="card card_orange" href="/movies">
+            <div class="card_info"><%- LNG["MOVIES_INFO"] %></div>
+            <div class="card_title"><%- LNG["MOVIES_TITLE"] %></div>
+            <div class="card_en">Movies</div>
+          </a>
+          <a class="card card_orange" href="/entry">
+            <div class="card_info"><%- LNG["ENTRY_INFO"] %></div>
+            <div class="card_title">エントリー</div>
+            <div class="card_en">Entry</div>
+          </a>
+          <a class="card card_orange" href="/upload">
+            <div class="card_info"><%- LNG["UPLOAD_INFO"] %></div>
+            <div class="card_title">アップロード</div>
+            <div class="card_en">Data Upload</div>
+          </a>
+        </div>
+      </section>
+
+      <!-- 運営モード -->
+      <section class="mode mode_admin">
+        <h2 class="mode_title"><span>運営モード</span><small>Staff</small></h2>
+        <div class="mode_cards">
+          <a class="card card_gray" href="/admin">
+            <div class="card_info">運営の鍵が必要です</div>
+            <div class="card_title">運営メニュー</div>
+            <div class="card_en">Admin</div>
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </div>
 
 </body>
 

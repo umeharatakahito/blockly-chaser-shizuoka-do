@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%- include('./common/page-head', {pageTitle: 'CHaser データアップロード'}) %>
+</head>
+
+<body class="admin_body">
+
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/"></a></div>
+    </div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">大会</span><%- title %></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin_area">
+    <div id="notice"></div>
+
+    <div class="admin_card">
+      <h2 class="admin_card_title">プログラムを提出する</h2>
+      <p class="admin_note">
+        プログラミング画面で保存した <strong>.blch</strong> ファイルを提出します。
+        同じ名前で何度でも提出できます。大会では<strong>いちばん新しいもの</strong>を使います。
+      </p>
+      <div class="admin_field">
+        <label for="entry_name">選手名 (エントリーした名前)</label>
+        <select class="admin_text" id="entry_name"></select>
+      </div>
+      <div class="admin_field">
+        <label for="file">ファイル (.blch)</label>
+        <input class="admin_text" type="file" id="file" accept=".blch,.zip,.json,.xml">
+      </div>
+      <div class="admin_field">
+        <label for="note">メモ (任意)</label>
+        <input class="admin_text" type="text" id="note" maxlength="200" placeholder="例: 決勝用に変更">
+      </div>
+      <button class="admin_button" id="submit">提出する</button>
+    </div>
+
+    <div class="admin_card">
+      <h2 class="admin_card_title">提出済み <span id="upload_count"></span></h2>
+      <div id="upload_list"></div>
+    </div>
+  </div>
+
+  <script src="/javascripts/upload.js"></script>
+
+</body>
+
+</html>

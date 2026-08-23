@@ -6,11 +6,24 @@
   <title>Blockly CHaser</title>
   <link rel="icon" href="/images/favicon.ico">
   <link rel='stylesheet' href='/stylesheets/match-cpu.css' />
-
 </head>
 
 <body>
-  <h1>CPU</h1>
+  <!-- CPU・ボット・ゴーストの側。名前を出すだけで、操作するものはない -->
+  <h1 id="cpu_name">CPU</h1>
+  <script>
+    (function () {
+      var m = /[?&]name=([^&]*)/.exec(location.search);
+      if (m) {
+        var el = document.getElementById('cpu_name');
+        el.textContent = decodeURIComponent(m[1].replace(/\+/g, '%20'));
+        el.style.width = 'auto';
+        el.style.left = '0';
+        el.style.right = '0';
+        el.style.fontSize = '28px';
+      }
+    })();
+  </script>
 </body>
 
 </html>

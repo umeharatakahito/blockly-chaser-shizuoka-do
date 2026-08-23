@@ -9,5 +9,9 @@
     "MOVIES_INFO": "かこの しあいを みてみよう！",
     "MOVIES_TITLE": "しあいどうが",
     "BRACKET_INFO": "だれが かちあがる？",
-    "BRACKET_TITLE": "たいせんひょう"
+    "BRACKET_TITLE": "たいせんひょう",
+    "BOT_INFO": "L1〜L30 のボットにちょうせん！",
+    "GHOST_INFO": "だれかのきろくとたたかおう！",
+    "ENTRY_INFO": "たいかいにさんかしよう！",
+    "UPLOAD_INFO": "プログラムをていしゅつしよう！"
 }

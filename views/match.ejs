@@ -10,6 +10,7 @@
   <link rel='stylesheet' href='/stylesheets/menu.css' />
   <link rel='stylesheet' href='/stylesheets/game-board.css' />
   <link rel='stylesheet' href='/stylesheets/match.css' />
+  <link rel='stylesheet' href='/stylesheets/match-extra.css' />
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/javascripts/jquery-3.4.1.min.js"></script>
@@ -26,7 +27,7 @@
   <div class="header">
 
     <div class="back_page">
-      <div class="back_button"><a href="./menu-match"></a></div>
+      <div class="back_button"><a id="back_link" href="/vs"></a></div>
     </div>
     <div class="control_area">
       <div class="page_title">
@@ -55,6 +56,20 @@
     <div id="game_area" class="display_off">
       <div id="game_board"></div>
       <div id="game_info"></div>
+    </div>
+  </div>
+
+  <!-- ボットに勝ったとき、名前を残すか聞く -->
+  <div id="name_overlay" class="display_off">
+    <div id="name_dialog">
+      <div id="name_dialog_title">勝利！ 名前を残そう</div>
+      <div id="name_dialog_text">この名前でランキングとゴーストに記録されます。<br>スキップすると自動でつけた名前になります。</div>
+      <input id="name_input" type="text" maxlength="20" placeholder="名前 (20文字まで)">
+      <div id="name_error"></div>
+      <div id="name_buttons">
+        <button id="name_submit">この名前で残す</button>
+        <button id="name_skip">スキップ</button>
+      </div>
     </div>
   </div>
 
