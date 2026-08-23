@@ -2,9 +2,10 @@
  * ボット対戦のメニュー。マップとレベルを選んで対戦画面へ。
  */
 (function () {
+  var RANDOM = 'random';
   var maps = {};
   var levels = [];
-  var selectedMap = null;
+  var selectedMap = RANDOM;
   var level = Number(localStorage['BOT_LEVEL'] || 10);
 
   var range = document.getElementById('level_range');
@@ -30,13 +31,15 @@
   }
 
   function updateGo() {
-    if (!selectedMap) {
-      goButton.disabled = true;
-      goButton.textContent = 'マップを選んでください';
-      return;
-    }
-    goButton.disabled = false;
-    goButton.textContent = maps[selectedMap].name + ' で L' + level + ' と対戦する';
+    var label = selectedMap === RANDOM ? 'ランダムなマップ' : maps[selectedMap].name;
+    goButton.textContent = label + ' で L' + level + ' と対戦する';
+  }
+
+  /** 「ランダム」を選んでいるときの、実際に使うマップの候補 */
+  function candidateMaps() {
+    return Object.keys(maps).filter(function (id) {
+      return !maps[id].cpu && String(maps[id].name).indexOf('room_onetime') === -1;
+    });
   }
 
   function selectMap(id) {
@@ -44,25 +47,38 @@
     document.querySelectorAll('#map_list .pick_item').forEach(function (el) {
       el.classList.toggle('on', el.dataset.id === id);
     });
-    renderMapPreview(document.getElementById('map_preview'), maps[id]);
-    document.getElementById('map_name').textContent = maps[id].name + ' (' + id + ', ' + maps[id].turn + 'ターン)';
-    localStorage['BOT_MAP'] = id;
+    var preview = document.getElementById('map_preview');
+    var nameBox = document.getElementById('map_name');
+    if (id === RANDOM) {
+      preview.innerHTML = '';
+      nameBox.textContent = 'ランダム: 対戦するたびに、下のマップからどれかが選ばれます';
+    } else {
+      renderMapPreview(preview, maps[id]);
+      nameBox.textContent = maps[id].name + ' (' + id + ', ' + maps[id].turn + 'ターン)';
+    }
     updateGo();
   }
 
   function renderMaps() {
     var list = document.getElementById('map_list');
     list.innerHTML = '';
+
+    // いちばん上は「ランダム」。迷わず始められるよう、これを既定にする
+    var random = document.createElement('div');
+    random.className = 'pick_item';
+    random.dataset.id = RANDOM;
+    random.innerHTML = '<span class="pick_item_name">ランダム (おまかせ)</span><span class="pick_item_sub">毎回ちがうマップ</span>';
+    random.onclick = function () { selectMap(RANDOM); };
+    list.appendChild(random);
+
     // ボットが hot に入るので、CPU の無い対人ルームを使う。大会マップ(静岡)を先に並べる
-    var ids = Object.keys(maps).sort(function (a, b) {
+    var ids = candidateMaps().sort(function (a, b) {
       var sa = String(maps[a].name).indexOf('静岡') === 0 ? 0 : 1;
       var sb = String(maps[b].name).indexOf('静岡') === 0 ? 0 : 1;
       return sa - sb || a.localeCompare(b);
     });
     ids.forEach(function (id) {
       var m = maps[id];
-      if (m.cpu) return;
-      if (String(m.name).indexOf('room_onetime') !== -1) return;
       var item = document.createElement('div');
       item.className = 'pick_item';
       item.dataset.id = id;
@@ -112,9 +128,14 @@
   range.oninput = function () { setLevel(Number(range.value)); };
 
   goButton.onclick = function () {
-    if (!selectedMap) return;
+    var mapId = selectedMap;
+    if (mapId === RANDOM) {
+      var ids = candidateMaps();
+      mapId = ids[Math.floor(Math.random() * ids.length)];
+    }
+    if (!mapId) return;
     var token = randomToken('bot');
-    location.href = '/match?room_id=' + encodeURIComponent(selectedMap)
+    location.href = '/match?room_id=' + encodeURIComponent(mapId)
       + '&room_token=' + token + '&bot=' + level;
   };
 
@@ -128,9 +149,8 @@
     maps = res[0];
     levels = res[1];
     renderMaps();
+    selectMap(RANDOM);
     setLevel(level);
-    var remembered = localStorage['BOT_MAP'];
-    if (remembered && maps[remembered] && !maps[remembered].cpu) selectMap(remembered);
     renderRanking(res[2].ranking || []);
   });
 })();
