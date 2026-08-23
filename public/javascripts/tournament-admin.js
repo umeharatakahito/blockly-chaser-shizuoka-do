@@ -192,6 +192,14 @@
     return list;
   }
 
+  var clearButton = $('clear_results');
+  if (clearButton) {
+    clearButton.onclick = function () {
+      if (!confirm('記録した試合結果をすべて消します。対戦表には影響しません。よろしいですか?')) return;
+      post('results/clear', {}).then(function (r) { if (r) { notice('試合結果を消しました'); reload(); } });
+    };
+  }
+
   function drawResults() {
     var host = $('results');
     host.innerHTML = '';

@@ -108,7 +108,7 @@ const DATA_ROUTES = [
   // 対戦表
   { binding: 'TOURNAMENT', method: 'GET', path: '/tournament/data' },
   { binding: 'TOURNAMENT', method: 'GET', path: '/tournament/admin-data', admin: true },
-  { binding: 'TOURNAMENT', method: 'POST', re: /^\/tournament\/(title|players\/add|players\/remove|build|reset|result|import)$/, admin: true },
+  { binding: 'TOURNAMENT', method: 'POST', re: /^\/tournament\/(title|players\/add|players\/remove|build|reset|result|import|results\/clear)$/, admin: true },
   // 試合動画
   { binding: 'MOVIES_META', method: 'GET', path: '/movies/list' },
   { binding: 'MOVIES_META', method: 'GET', path: '/movies/admin-list', admin: true },

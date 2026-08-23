@@ -134,6 +134,12 @@ export class TournamentStore extends DurableObject {
         return Response.json({ ok: true, tournament: this.#save(data) });
       }
 
+      // 練習や動作確認で溜まった試合結果を大会前に消す
+      case 'results/clear': {
+        this.sql.exec('DELETE FROM results');
+        return Response.json({ ok: true });
+      }
+
       case 'result': {
         const data = this.#load();
         const r = setResult(data, String(body.matchId || ''), body);

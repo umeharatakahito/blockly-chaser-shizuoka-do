@@ -272,8 +272,8 @@ export class MatchRoom extends DurableObject {
     let room = this.#loadRoom();
     let match = this.#loadMatch();
 
-    // 前の試合が終わっていれば片付ける
-    if (match && match.finished) {
+    // 前の試合が終わっていれば片付ける。ルーム情報のない試合は古い形式の残骸なので同様に捨てる
+    if (match && (match.finished || !room)) {
       await this.#reset();
       room = null;
       match = null;
