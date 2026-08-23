@@ -13,6 +13,7 @@
 
 import { createState, getReady, walk, look, search, putWall, checkResult } from './engine.js';
 import { createCpuState, decideByLevel } from './cpu.js';
+import { createBot, decideBotAction, afterBotAction, clampLevel } from './bot.js';
 
 /** 相手が動かないまま試合が止まるのを防ぐ既定の待ち時間 */
 export const DEFAULT_TIMEOUT_MS = 10000;
@@ -23,16 +24,42 @@ export const CPU_DELAY_MS = 100;
  * 試合を作る。
  *
  * @param {Object} mapDef  マップ定義
- * @param {Object} opts    { playerName, playerSide }
- *                         playerSide を省略すると、CPU 設定から自動で決める
+ * @param {Object} opts
+ *   playerName  人間側の名前
+ *   playerSide  人間側。省略すると CPU 設定から自動で決める
+ *   bot         { level, side? } ボット対戦。マップの cpu 設定より優先する
+ *   ghost       { actions, level, name, side? } ゴースト対戦。記録した手をなぞる
+ *   record      true なら人間側の手を記録する(ゴーストの元になる)
  */
-export function createMatch(mapDef, { playerName = 'player', playerSide = null } = {}) {
+export function createMatch(mapDef, {
+  playerName = 'player', playerSide = null, bot = null, ghost = null, record = false,
+} = {}) {
   const state = createState(mapDef);
 
   let side = playerSide;
   let cpu = null;
 
-  if (mapDef.cpu) {
+  if (ghost) {
+    const ghostSide = ghost.side === 'hot' ? 'hot' : 'cool';
+    side = side ?? (ghostSide === 'cool' ? 'hot' : 'cool');
+    cpu = {
+      side: ghostSide,
+      brain: {
+        kind: 'ghost',
+        actions: Array.isArray(ghost.actions) ? ghost.actions : [],
+        index: 0,
+        // 記録が尽きたあとは、元の試合と同じレベルのボットとして続ける
+        fallback: createBot(clampLevel(ghost.level ?? 1), state.sizeX, state.sizeY),
+      },
+    };
+    state[ghostSide].name = ghost.name ? 'ゴースト: ' + ghost.name : 'ゴースト';
+  } else if (bot) {
+    const botSide = bot.side === 'cool' ? 'cool' : 'hot';
+    side = side ?? (botSide === 'cool' ? 'hot' : 'cool');
+    const level = clampLevel(bot.level);
+    cpu = { side: botSide, brain: createBot(level, state.sizeX, state.sizeY) };
+    state[botSide].name = 'ボット L' + level;
+  } else if (mapDef.cpu) {
     // 本家では cpu.turn が CPU の担当側を表す
     const cpuSide = mapDef.cpu.turn === 'cool' ? 'cool' : 'hot';
     side = side ?? (cpuSide === 'cool' ? 'hot' : 'cool');
@@ -50,6 +77,8 @@ export function createMatch(mapDef, { playerName = 'player', playerSide = null }
     playerSide: side,
     finished: false,
     result: null,
+    record: Boolean(record),
+    recording: [],
     timeoutMs: Number.isFinite(mapDef.timeout) ? mapDef.timeout * 1000 : DEFAULT_TIMEOUT_MS,
   };
 }
@@ -130,6 +159,11 @@ export function applyAction(match, chara, kind, direction) {
   const { cells, attacked } = action.run(match.state, chara, direction);
   const result = checkResult(match.state, chara, attacked);
 
+  // ゴーストの元になる記録。人間側の手だけを残す
+  if (match.record && !(match.cpu && match.cpu.side === chara)) {
+    match.recording.push([kind, direction]);
+  }
+
   // 画面演出用。本家の updata_board に載る effect と同じ形
   const effect = { t: action.effect, p: chara };
   if (action.effect === 'l' || action.effect === 's') effect.d = direction;
@@ -159,7 +193,7 @@ export function timeout(match, winner) {
 }
 
 /**
- * CPU に1手指させる。CPU の番でなければ何もしない。
+ * CPU・ボット・ゴーストに1手指させる。その側の番でなければ何もしない。
  *
  * @returns {{kind: string, direction: string, cells: number[], result: Object|null, nextTurn: string|null}|null}
  */
@@ -172,9 +206,27 @@ export function playCpuTurn(match, rng = Math.random) {
   const cells = requestReady(match, side);
   if (!cells) return null;
 
-  const [kind, direction] = decideByLevel(cells, match.cpu.brain, rng);
+  const brain = match.cpu.brain;
+  let kind;
+  let direction;
 
-  // CPU の判断結果を本家のイベント名へ読み替える
+  if (brain.kind === 'ghost') {
+    const recorded = brain.actions[brain.index];
+    if (recorded) {
+      brain.index += 1;
+      [kind, direction] = recorded;
+    } else {
+      [kind, direction] = decideBotAction(match.state, side, brain.fallback, rng);
+      afterBotAction(brain.fallback, match.state, side, kind, direction);
+    }
+  } else if (brain.kind === 'bot') {
+    [kind, direction] = decideBotAction(match.state, side, brain, rng);
+    afterBotAction(brain, match.state, side, kind, direction);
+  } else {
+    [kind, direction] = decideByLevel(cells, brain, rng);
+  }
+
+  // 判断結果を本家のイベント名へ読み替える
   const mapped = kind === 'attack' ? 'put_wall' : kind === 'move' ? 'move_player' : kind;
   const outcome = applyAction(match, side, mapped, direction);
   if (!outcome) return null;
