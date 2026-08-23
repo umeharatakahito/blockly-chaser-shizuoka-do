@@ -19,5 +19,18 @@
     }
   ],
 
+  // Blockly やスタイルシートなどの静的ファイル。
+  // run_worker_first を指定しないと Worker より先にファイルが返され、
+  // /room/... の WebSocket が届かなくなる
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    // 画面は Worker が言語ごとに振り分けて .html を直接取りに行く。
+    // 既定の "拡張子なしURLへリダイレクト" が働くと 307 になってしまうため切る
+    "html_handling": "none",
+    "not_found_handling": "none",
+    "run_worker_first": ["/room/*", "/health", "/api/*"]
+  },
+
   "observability": { "enabled": true }
 }

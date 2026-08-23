@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>CHaser Match Menu</title>
+  <link rel="icon" href="/images/favicon.ico">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <link rel='stylesheet' href='/stylesheets/menu.css' />
+  <link rel='stylesheet' href='/stylesheets/menu-watching.css' />
+  <link rel='stylesheet' href='/stylesheets/animation.css' />
+
+  <%- include('./common/config-init') %>
+
+    <script src="/javascripts/jquery-3.4.1.min.js"></script>
+
+    <script>const lng_list = <%- JSON.stringify(LNG) %>;</script>
+
+
+</head>
+
+<body>
+  <%- include('./common/config', {LNG: C_LNG}) %>
+
+    <div class="header">
+
+      <div class="back_page">
+        <div class="back_button"><a href="../"></a></div>
+      </div>
+      <div class="control_area">
+        <div class="page_title">
+          <h1><span class="page_title_span"><%- LNG["TITLE"] %></span><%- title %></h1>
+        </div>
+        <div class="control_button">
+          <button id="configButton" title="<%- LNG[" CONFIG"] %>"></button>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="menu_area">
+      <div id="watching_list">
+
+      </div>
+      <div id="watching_info">
+
+      </div>
+    </div>
+
+    <script src="/javascripts/menu-watching.js"></script>
+
+</body>
+
+</html>

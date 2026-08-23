@@ -45,7 +45,7 @@ test('自分の番でなければ get_ready は通らない', () => {
 
 test('get_ready の前に行動はできない', () => {
   const m = startMatch(createMatch(fixedMap('room_014')));
-  assert.strictEqual(applyAction(m, 'cool', 'walk', 'top'), null);
+  assert.strictEqual(applyAction(m, 'cool', 'move_player', 'top'), null);
 });
 
 test('get_ready のあとに1回だけ行動できる', () => {
@@ -82,7 +82,7 @@ test('決着後は行動できない', () => {
   const m = startMatch(createMatch(fixedMap('room_014')));
   requestReady(m, 'cool');
   timeout(m, 'hot');
-  assert.strictEqual(applyAction(m, 'cool', 'walk', 'top'), null);
+  assert.strictEqual(applyAction(m, 'cool', 'move_player', 'top'), null);
 });
 
 test('ブロックへ突っ込むと決着する', () => {
@@ -94,7 +94,7 @@ test('ブロックへ突っ込むと決着する', () => {
   const wallIndex = Object.keys(dirs).find((i) => cells[i] === 2);
   assert.ok(wallIndex, 'テスト用にブロックが隣接している必要があります');
 
-  const out = applyAction(m, 'cool', 'walk', dirs[wallIndex]);
+  const out = applyAction(m, 'cool', 'move_player', dirs[wallIndex]);
   assert.ok(out.result, '決着していません');
   assert.strictEqual(out.result.winner, 'hot');
 });
@@ -113,7 +113,7 @@ test('CPU が自分の番に1手指す', () => {
 
   const move = playCpuTurn(m, () => 0);
   assert.ok(move, 'CPU が動いていません');
-  assert.ok(['walk', 'look', 'search', 'put'].includes(move.kind), '不正な行動: ' + move.kind);
+  assert.ok(['move_player', 'look', 'search', 'put_wall'].includes(move.kind), '不正な行動: ' + move.kind);
   assert.ok(isTurnOf(m, 'cool'), 'CPU のあとに手番が戻っていません');
 });
 
@@ -139,7 +139,7 @@ test('CPU と最後まで戦って決着する', () => {
       // ブロックでない方向へ進む。無ければ索敵
       const idx = { top: 1, bottom: 7, left: 3, right: 5 };
       const open = dirs.filter((d) => cells[idx[d]] !== 2);
-      if (open.length) applyAction(m, 'cool', 'walk', open[Math.floor(rng() * open.length)]);
+      if (open.length) applyAction(m, 'cool', 'move_player', open[Math.floor(rng() * open.length)]);
       else applyAction(m, 'cool', 'search', 'top');
     } else if (isTurnOf(m, 'hot')) {
       assert.ok(playCpuTurn(m, rng), `${steps}手目: CPU が動きません`);

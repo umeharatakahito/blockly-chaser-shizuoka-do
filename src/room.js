@@ -14,7 +14,7 @@ import maps from './data/maps.json' with { type: 'json' };
 import { prepareMap } from './game/generate.js';
 import {
   createMatch, startMatch, requestReady, applyAction, timeout,
-  playCpuTurn, boardSnapshot, isTurnOf, CPU_DELAY_MS,
+  playCpuTurn, boardSnapshot, isTurnOf, CPU_DELAY_MS, REC_EVENT,
 } from './game/match.js';
 
 /** 試合が始まるまでの間。本家と同じ */
@@ -95,28 +95,35 @@ export class MatchRoom extends DurableObject {
 
   /* ---------------------------------------------- WebSocket */
 
+  /**
+   * 受け取るのは { event, data } の形。event 名は Node 版の Socket.IO と同じにしてある。
+   * こうしておくと、クライアント側は薄い変換をかぶせるだけで済む。
+   */
   async webSocketMessage(ws, raw) {
-    let msg;
+    let frame;
     try {
-      msg = JSON.parse(raw);
+      frame = JSON.parse(raw);
     } catch (e) {
-      return this.#send(ws, { type: 'error', error: 'JSON として読めません' });
+      return this.#emit(ws, 'error', 'JSON として読めません');
     }
 
+    const { event, data } = frame || {};
+
     try {
-      switch (msg.type) {
-        case 'join': return await this.#onJoin(ws, msg);
+      switch (event) {
+        case 'player_join': return await this.#onJoin(ws, data || {});
         case 'get_ready': return await this.#onGetReady(ws);
-        case 'walk':
+        case 'move_player':
         case 'look':
         case 'search':
-        case 'put': return await this.#onAction(ws, msg.type, msg.direction);
+        case 'put_wall': return await this.#onAction(ws, event, data);
+        case 'leave_room': return await this.#onLeave();
         default:
-          return this.#send(ws, { type: 'error', error: '不明な要求です: ' + msg.type });
+          return this.#emit(ws, 'error', '不明な要求です: ' + event);
       }
     } catch (e) {
       // ここで投げると接続が切れる。試合を続けられるよう握って知らせる
-      return this.#send(ws, { type: 'error', error: String(e && e.message) });
+      return this.#emit(ws, 'error', String(e && e.message));
     }
   }
 
@@ -131,11 +138,11 @@ export class MatchRoom extends DurableObject {
   /* ---------------------------------------------- 要求の処理 */
 
   async #onJoin(ws, msg) {
-    const roomId = String(msg.roomId || this.#read('room_id', '') || '');
+    const roomId = String(msg.room_id || this.#read('room_id', '') || '');
     const mapDef = maps[roomId];
 
     if (!mapDef) {
-      return this.#send(ws, { type: 'error', error: 'ルームが見つかりません: ' + roomId });
+      return this.#emit(ws, 'error', 'サーバーIDが存在しません');
     }
 
     this.#write('room_id', roomId);
@@ -145,14 +152,14 @@ export class MatchRoom extends DurableObject {
     const match = startMatch(createMatch(prepared, { playerName: String(msg.name || 'player') }));
     this.#saveMatch(match);
 
-    this.#send(ws, {
-      type: 'joined',
-      roomId,
-      roomName: mapDef.name,
-      sizeX: match.state.sizeX,
-      sizeY: match.state.sizeY,
-      yourSide: match.playerSide,
-      ...boardSnapshot(match),
+    this.#emit(ws, 'joined_room', {
+      x_size: match.state.sizeX,
+      y_size: match.state.sizeY,
+      cool_name: match.state.cool.name,
+      hot_name: match.state.hot.name,
+      // 本家には無いが、どちら側を担当するか分からないと困るので足している
+      your_chara: match.playerSide,
+      room_name: mapDef.name,
     });
 
     // 本家と同じく、少し置いてから盤面を配って開始する
@@ -161,35 +168,40 @@ export class MatchRoom extends DurableObject {
 
   async #onGetReady(ws) {
     const match = this.#loadMatch();
-    if (!match) return this.#send(ws, { type: 'error', error: 'まだ参加していません' });
-    if (match.finished) return this.#send(ws, { type: 'finished', ...match.result });
+    if (!match || match.finished) return this.#emit(ws, 'get_ready_rec', {});
 
     const cells = requestReady(match, match.playerSide);
     this.#saveMatch(match);
 
     // 自分の番でなければ本家と同じく中身のない応答を返す
-    return this.#send(ws, cells ? { type: 'ready', cells } : { type: 'ready' });
+    return this.#emit(ws, 'get_ready_rec', cells ? { rec_data: cells } : {});
   }
 
   async #onAction(ws, kind, direction) {
+    const rec = REC_EVENT[kind];
     const match = this.#loadMatch();
-    if (!match) return this.#send(ws, { type: 'error', error: 'まだ参加していません' });
-    if (match.finished) return this.#send(ws, { type: 'finished', ...match.result });
+    if (!match || match.finished) return this.#emit(ws, rec, {});
 
     const outcome = applyAction(match, match.playerSide, kind, String(direction || 'right'));
     if (!outcome) {
       // 自分の番でない、または get_ready がまだ。本家は無応答なので中身なしを返す
       this.#saveMatch(match);
-      return this.#send(ws, { type: 'acted' });
+      return this.#emit(ws, rec, {});
     }
 
     this.#saveMatch(match);
-    this.#send(ws, { type: 'acted', cells: outcome.cells });
-    this.#broadcast({ type: 'board', ...boardSnapshot(match) });
+    this.#emit(ws, rec, { rec_data: outcome.cells });
+    this.#board('updata_board', match, outcome.effect);
 
     if (outcome.result) return await this.#finish(match);
-
     await this.#afterTurn(match);
+  }
+
+  async #onLeave() {
+    await this.timers.cancel(TIMER_TURN);
+    await this.timers.cancel(TIMER_CPU);
+    await this.timers.cancel(TIMER_START);
+    this.sql.exec('DELETE FROM room_state WHERE key = ?', 'match');
   }
 
   /**
@@ -216,11 +228,10 @@ export class MatchRoom extends DurableObject {
     await this.timers.cancel(TIMER_CPU);
     this.#saveMatch(match);
 
-    this.#broadcast({
-      type: 'game_result',
-      winner: match.result.winner,
+    // 本家の綴りに合わせる (winer)。クライアントがこの名前で読んでいる
+    this.#broadcastEvent('game_result', {
+      winer: match.result.winner,
       info: match.result.info,
-      ...boardSnapshot(match),
     });
   }
 
@@ -232,7 +243,7 @@ export class MatchRoom extends DurableObject {
       if (!match || match.finished) continue;
 
       if (timer.name === TIMER_START) {
-        this.#broadcast({ type: 'board', ...boardSnapshot(match) });
+        this.#board('new_board', match);
         await this.#afterTurn(match);
         continue;
       }
@@ -242,7 +253,7 @@ export class MatchRoom extends DurableObject {
         this.#saveMatch(match);
 
         if (!move) continue;
-        this.#broadcast({ type: 'board', ...boardSnapshot(match) });
+        this.#board('updata_board', match, move.effect);
 
         if (move.result) await this.#finish(match);
         else await this.#afterTurn(match);
@@ -258,16 +269,18 @@ export class MatchRoom extends DurableObject {
 
   /* ---------------------------------------------- 送信 */
 
-  #send(ws, payload) {
+  /** 1つの接続へ送る */
+  #emit(ws, event, data) {
     try {
-      ws.send(JSON.stringify(payload));
+      ws.send(JSON.stringify({ event, data }));
     } catch (e) {
       // 切れかけの接続。ここで投げると試合が止まる
     }
   }
 
-  #broadcast(payload) {
-    const text = JSON.stringify(payload);
+  /** ルームの全接続へ送る */
+  #broadcastEvent(event, data) {
+    const text = JSON.stringify({ event, data });
     for (const ws of this.ctx.getWebSockets()) {
       try {
         ws.send(text);
@@ -275,5 +288,18 @@ export class MatchRoom extends DurableObject {
         // 同上
       }
     }
+  }
+
+  /** 盤面を配る。本家の new_board / updata_board と同じ形 */
+  #board(event, match, effect = null) {
+    const snap = boardSnapshot(match);
+    const payload = {
+      map_data: snap.map,
+      cool_score: snap.coolScore,
+      hot_score: snap.hotScore,
+      turn: snap.turn,
+    };
+    if (effect) payload.effect = effect;
+    this.#broadcastEvent(event, payload);
   }
 }

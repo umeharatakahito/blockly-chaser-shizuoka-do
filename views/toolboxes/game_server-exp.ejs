@@ -1,0 +1,102 @@
+<category name="%{BKY_GAME_SERVER}" colour="#5b93a5">
+  <block type="server_join"></block>
+  <block type="get_ready"></block>
+  <block type="direction4_value"></block>
+
+  <block type="move_player_exp">
+    <value name="move">
+      <shadow type="direction4_value">
+        <field name="direction_value">"top"</field>
+      </shadow>
+    </value>
+  </block>
+
+  <block type="put_wall_exp">
+    <value name="put_wall">
+      <shadow type="direction4_value">
+        <field name="direction_value">"top"</field>
+      </shadow>
+    </value>
+  </block>
+
+  <block type="look_exp">
+    <value name="look">
+      <shadow type="direction4_value">
+        <field name="direction_value">"top"</field>
+      </shadow>
+    </value>
+  </block>
+
+  <block type="search_exp">
+    <value name="search">
+      <shadow type="direction4_value">
+        <field name="direction_value">"top"</field>
+      </shadow>
+    </value>
+  </block>
+
+  <block type="get_ready_list"></block>
+  <block type="look_list"></block>
+  <block type="search_list"></block>
+  <block type="position9_value"></block>
+  <block type="get_value_exp">
+    <value name="map_position">
+      <shadow type="position9_value">
+        <field name="position_value">1</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="get_look_value_exp">
+    <value name="map_position">
+      <shadow type="position9_value">
+        <field name="position_value">1</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="position9_num_value"></block>
+  <block type="get_search_value_exp">
+    <value name="map_position">
+      <shadow type="position9_num_value">
+        <field name="position_num_value">0</field>
+      </shadow>
+    </value>
+  </block>
+
+  <block type="item4_value"></block>
+  <block type="if_value_exp">
+    <value name="map_position">
+      <shadow type="position9_value">
+        <field name="position_value">1</field>
+      </shadow>
+    </value>
+    <value name="map_item">
+      <shadow type="item4_value">
+        <field name="item_value">3</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="if_look_value_exp">
+    <value name="map_position">
+      <shadow type="position9_value">
+        <field name="position_value">1</field>
+      </shadow>
+    </value>
+    <value name="map_item">
+      <shadow type="item4_value">
+        <field name="item_value">3</field>
+      </shadow>
+    </value>
+  </block>
+  <block type="if_search_value_exp">
+    <value name="map_position">
+      <shadow type="position9_num_value">
+        <field name="position_num_value">0</field>
+      </shadow>
+    </value>
+    <value name="map_item">
+      <shadow type="item4_value">
+        <field name="item_value">3</field>
+      </shadow>
+    </value>
+  </block>
+</category>

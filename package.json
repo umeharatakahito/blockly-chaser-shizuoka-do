@@ -4,11 +4,13 @@
   "private": true,
   "description": "Blockly CHaser サーバーの Cloudflare Durable Objects 版（検証中）",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "test": "node --test --test-concurrency=1"
+    "dev": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy",
+    "test": "node --test --test-concurrency=1",
+    "build": "node tool/build_views.mjs"
   },
   "devDependencies": {
+    "ejs": "^6.0.1",
     "wrangler": "^4"
   },
   "type": "module"

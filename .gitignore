@@ -4,3 +4,6 @@ dist/
 # wrangler のローカル状態(ローカルの Durable Objects や KV の中身)
 .wrangler/
 .dev.vars
+
+# EJS から生成する画面。tool/build_views.mjs で作り直せる
+public/pages/

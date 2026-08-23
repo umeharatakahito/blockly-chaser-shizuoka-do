@@ -76,14 +76,38 @@ export function requestReady(match, chara) {
   return getReady(match.state, chara);
 }
 
+/**
+ * 行動の種類。キーは本家のイベント名に合わせてある。
+ * effect は画面演出の種別で、本家の game_result_check に渡す値と同じ。
+ */
 const ACTIONS = {
-  walk: (state, chara, dir) => ({ cells: walk(state, chara, dir), attacked: false }),
-  look: (state, chara, dir) => ({ cells: look(state, chara, dir), attacked: false }),
-  search: (state, chara, dir) => ({ cells: search(state, chara, dir), attacked: false }),
-  put: (state, chara, dir) => {
-    const { cells, hitOpponent } = putWall(state, chara, dir);
-    return { cells, attacked: hitOpponent };
+  move_player: {
+    effect: 'r',
+    run: (state, chara, dir) => ({ cells: walk(state, chara, dir), attacked: false }),
   },
+  look: {
+    effect: 'l',
+    run: (state, chara, dir) => ({ cells: look(state, chara, dir), attacked: false }),
+  },
+  search: {
+    effect: 's',
+    run: (state, chara, dir) => ({ cells: search(state, chara, dir), attacked: false }),
+  },
+  put_wall: {
+    effect: 'r',
+    run: (state, chara, dir) => {
+      const { cells, hitOpponent } = putWall(state, chara, dir);
+      return { cells, attacked: hitOpponent };
+    },
+  },
+};
+
+/** 応答のイベント名。本家と同じ */
+export const REC_EVENT = {
+  move_player: 'move_rec',
+  look: 'look_rec',
+  search: 'search_rec',
+  put_wall: 'put_rec',
 };
 
 /**
@@ -103,21 +127,24 @@ export function applyAction(match, chara, kind, direction) {
   me.turn = false;
   me.getready = true;
 
-  const { cells, attacked } = action(match.state, chara, direction);
+  const { cells, attacked } = action.run(match.state, chara, direction);
   const result = checkResult(match.state, chara, attacked);
+
+  // 画面演出用。本家の updata_board に載る effect と同じ形
+  const effect = { t: action.effect, p: chara };
+  if (action.effect === 'l' || action.effect === 's') effect.d = direction;
 
   if (result) {
     match.finished = true;
     match.result = result;
-    return { cells, result, nextTurn: null };
+    return { cells, result, effect, nextTurn: null };
   }
 
-  // 相手の番にする
   const next = chara === 'cool' ? 'hot' : 'cool';
   match.state[next].turn = true;
   match.state[next].getready = true;
 
-  return { cells, result: null, nextTurn: next };
+  return { cells, result: null, effect, nextTurn: next };
 }
 
 /**
@@ -147,8 +174,8 @@ export function playCpuTurn(match, rng = Math.random) {
 
   const [kind, direction] = decideByLevel(cells, match.cpu.brain, rng);
 
-  // CPU の "attack" は put、"move" は walk に対応する
-  const mapped = kind === 'attack' ? 'put' : kind === 'move' ? 'walk' : kind;
+  // CPU の判断結果を本家のイベント名へ読み替える
+  const mapped = kind === 'attack' ? 'put_wall' : kind === 'move' ? 'move_player' : kind;
   const outcome = applyAction(match, side, mapped, direction);
   if (!outcome) return null;
 

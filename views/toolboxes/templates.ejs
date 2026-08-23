@@ -1,0 +1,538 @@
+<category name="テンプレート" colour="#5b93a5">
+
+  <block type="comment_block">
+    <field name="COMMENT">アイテム発見</field>
+    <next>
+      <block type="controls_if">
+        <mutation elseif="5" else="1"></mutation>
+        <value name="IF0">
+          <block type="if_value">
+            <field name="map_position">1</field>
+            <field name="map_item">3</field>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="move_player">
+            <field name="move">"top"</field>
+          </block>
+        </statement>
+        <value name="IF1">
+          <block type="if_value">
+            <field name="map_position">7</field>
+            <field name="map_item">3</field>
+          </block>
+        </value>
+        <statement name="DO1">
+          <block type="move_player">
+            <field name="move">"bottom"</field>
+          </block>
+        </statement>
+        <value name="IF2">
+          <block type="if_value">
+            <field name="map_position">3</field>
+            <field name="map_item">3</field>
+          </block>
+        </value>
+        <statement name="DO2">
+          <block type="move_player">
+            <field name="move">"left"</field>
+          </block>
+        </statement>
+        <value name="IF3">
+          <block type="if_value">
+            <field name="map_position">5</field>
+            <field name="map_item">3</field>
+          </block>
+        </value>
+        <statement name="DO3">
+          <block type="move_player">
+            <field name="move">"right"</field>
+          </block>
+        </statement>
+        <value name="IF4">
+          <block type="logic_operation">
+            <field name="OP">OR</field>
+            <value name="A">
+              <block type="if_value">
+                <field name="map_position">0</field>
+                <field name="map_item">3</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="if_value">
+                <field name="map_position">2</field>
+                <field name="map_item">3</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO4">
+          <block type="move_player">
+            <field name="move">"top"</field>
+          </block>
+        </statement>
+        <value name="IF5">
+          <block type="logic_operation">
+            <field name="OP">OR</field>
+            <value name="A">
+              <block type="if_value">
+                <field name="map_position">6</field>
+                <field name="map_item">3</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="if_value">
+                <field name="map_position">8</field>
+                <field name="map_item">3</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO5">
+          <block type="move_player">
+            <field name="move">"bottom"</field>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+
+  <block type="comment_block">
+    <field name="COMMENT">プレイヤー発見</field>
+    <next>
+      <block type="controls_if">
+        <mutation elseif="5" else="1"></mutation>
+        <value name="IF0">
+          <block type="if_value">
+            <field name="map_position">1</field>
+            <field name="map_item">1</field>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="put_wall">
+            <field name="put_wall">"top"</field>
+          </block>
+        </statement>
+        <value name="IF1">
+          <block type="if_value">
+            <field name="map_position">7</field>
+            <field name="map_item">1</field>
+          </block>
+        </value>
+        <statement name="DO1">
+          <block type="put_wall">
+            <field name="put_wall">"bottom"</field>
+          </block>
+        </statement>
+        <value name="IF2">
+          <block type="if_value">
+            <field name="map_position">3</field>
+            <field name="map_item">1</field>
+          </block>
+        </value>
+        <statement name="DO2">
+          <block type="put_wall">
+            <field name="put_wall">"left"</field>
+          </block>
+        </statement>
+        <value name="IF3">
+          <block type="if_value">
+            <field name="map_position">5</field>
+            <field name="map_item">1</field>
+          </block>
+        </value>
+        <statement name="DO3">
+          <block type="put_wall">
+            <field name="put_wall">"right"</field>
+          </block>
+        </statement>
+        <value name="IF4">
+          <block type="logic_operation">
+            <field name="OP">OR</field>
+            <value name="A">
+              <block type="if_value">
+                <field name="map_position">0</field>
+                <field name="map_item">1</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="if_value">
+                <field name="map_position">2</field>
+                <field name="map_item">1</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="IF5">
+          <block type="logic_operation">
+            <field name="OP">OR</field>
+            <value name="A">
+              <block type="if_value">
+                <field name="map_position">6</field>
+                <field name="map_item">1</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="if_value">
+                <field name="map_position">8</field>
+                <field name="map_item">1</field>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </next>
+  </block>
+
+  <block type="comment_block">
+    <field name="COMMENT">ブロック発見</field>
+    <next>
+      <block type="controls_if">
+        <mutation elseif="3" else="1"></mutation>
+        <value name="IF0">
+          <block type="if_value">
+            <field name="map_position">1</field>
+            <field name="map_item">2</field>
+          </block>
+        </value>
+        <value name="IF1">
+          <block type="if_value">
+            <field name="map_position">7</field>
+            <field name="map_item">2</field>
+          </block>
+        </value>
+        <value name="IF2">
+          <block type="if_value">
+            <field name="map_position">3</field>
+            <field name="map_item">2</field>
+          </block>
+        </value>
+        <value name="IF3">
+          <block type="if_value">
+            <field name="map_position">5</field>
+            <field name="map_item">2</field>
+          </block>
+        </value>
+      </block>
+    </next>
+  </block>
+
+  <block type="comment_block">
+    <field name="COMMENT">ブロックなし</field>
+    <next>
+      <block type="controls_if">
+        <mutation elseif="3" else="1"></mutation>
+        <value name="IF0">
+          <block type="logic_negate">
+            <value name="BOOL">
+              <block type="if_value">
+                <field name="map_position">1</field>
+                <field name="map_item">2</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="move_player">
+            <field name="move">"top"</field>
+          </block>
+        </statement>
+        <value name="IF1">
+          <block type="logic_negate">
+            <value name="BOOL">
+              <block type="if_value">
+                <field name="map_position">7</field>
+                <field name="map_item">2</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO1">
+          <block type="move_player">
+            <field name="move">"bottom"</field>
+          </block>
+        </statement>
+        <value name="IF2">
+          <block type="logic_negate">
+            <value name="BOOL">
+              <block type="if_value">
+                <field name="map_position">3</field>
+                <field name="map_item">2</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO2">
+          <block type="move_player">
+            <field name="move">"left"</field>
+          </block>
+        </statement>
+        <value name="IF3">
+          <block type="logic_negate">
+            <value name="BOOL">
+              <block type="if_value">
+                <field name="map_position">5</field>
+                <field name="map_item">2</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO3">
+          <block type="move_player">
+            <field name="move">"right"</field>
+          </block>
+        </statement>
+      </block>
+    </next>
+  </block>
+
+  <variables>
+    <variable>ブロックのない方向</variable>
+    <variable>移動方向</variable>
+  </variables>
+  <block type="comment_block">
+    <field name="COMMENT">ランダム移動</field>
+    <next>
+      <block type="variables_set">
+        <field name="VAR">ブロックのない方向</field>
+        <value name="VALUE">
+          <block type="lists_create_with">
+            <mutation items="0"></mutation>
+          </block>
+        </value>
+        <next>
+          <block type="controls_if">
+            <value name="IF0">
+              <block type="logic_negate">
+                <value name="BOOL">
+                  <block type="if_value">
+                    <field name="map_position">1</field>
+                    <field name="map_item">2</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="lists_setIndex">
+                <mutation at="false"></mutation>
+                <field name="MODE">INSERT</field>
+                <field name="WHERE">LAST</field>
+                <value name="LIST">
+                  <block type="variables_get">
+                    <field name="VAR">ブロックのない方向</field>
+                  </block>
+                </value>
+                <value name="TO">
+                  <block type="text">
+                    <field name="TEXT">上</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <block type="controls_if">
+                <value name="IF0">
+                  <block type="logic_negate">
+                    <value name="BOOL">
+                      <block type="if_value">
+                        <field name="map_position">7</field>
+                        <field name="map_item">2</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <statement name="DO0">
+                  <block type="lists_setIndex">
+                    <mutation at="false"></mutation>
+                    <field name="MODE">INSERT</field>
+                    <field name="WHERE">LAST</field>
+                    <value name="LIST">
+                      <block type="variables_get">
+                        <field name="VAR">ブロックのない方向</field>
+                      </block>
+                    </value>
+                    <value name="TO">
+                      <block type="text">
+                        <field name="TEXT">下</field>
+                      </block>
+                    </value>
+                  </block>
+                </statement>
+                <next>
+                  <block type="controls_if">
+                    <value name="IF0">
+                      <block type="logic_negate">
+                        <value name="BOOL">
+                          <block type="if_value">
+                            <field name="map_position">3</field>
+                            <field name="map_item">2</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <statement name="DO0">
+                      <block type="lists_setIndex">
+                        <mutation at="false"></mutation>
+                        <field name="MODE">INSERT</field>
+                        <field name="WHERE">LAST</field>
+                        <value name="LIST">
+                          <block type="variables_get">
+                            <field name="VAR">ブロックのない方向</field>
+                          </block>
+                        </value>
+                        <value name="TO">
+                          <block type="text">
+                            <field name="TEXT">左</field>
+                          </block>
+                        </value>
+                      </block>
+                    </statement>
+                    <next>
+                      <block type="controls_if">
+                        <value name="IF0">
+                          <block type="logic_negate">
+                            <value name="BOOL">
+                              <block type="if_value">
+                                <field name="map_position">5</field>
+                                <field name="map_item">2</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <statement name="DO0">
+                          <block type="lists_setIndex">
+                            <mutation at="false"></mutation>
+                            <field name="MODE">INSERT</field>
+                            <field name="WHERE">LAST</field>
+                            <value name="LIST">
+                              <block type="variables_get">
+                                <field name="VAR">ブロックのない方向</field>
+                              </block>
+                            </value>
+                            <value name="TO">
+                              <block type="text">
+                                <field name="TEXT">右</field>
+                              </block>
+                            </value>
+                          </block>
+                        </statement>
+                        <next>
+                          <block type="variables_set">
+                            <field name="VAR">移動方向</field>
+                            <value name="VALUE">
+                              <block type="lists_getIndex">
+                                <mutation statement="false" at="false"></mutation>
+                                <field name="MODE">GET</field>
+                                <field name="WHERE">RANDOM</field>
+                                <value name="VALUE">
+                                  <block type="variables_get">
+                                    <field name="VAR">ブロックのない方向</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="controls_if">
+                                <mutation elseif="3" else="1"></mutation>
+                                <value name="IF0">
+                                  <block type="logic_compare">
+                                    <field name="OP">EQ</field>
+                                    <value name="A">
+                                      <block type="variables_get">
+                                        <field name="VAR">移動方向</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="text">
+                                        <field name="TEXT">上</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <statement name="DO0">
+                                  <block type="move_player">
+                                    <field name="move">"top"</field>
+                                  </block>
+                                </statement>
+                                <value name="IF1">
+                                  <block type="logic_compare">
+                                    <field name="OP">EQ</field>
+                                    <value name="A">
+                                      <block type="variables_get">
+                                        <field name="VAR">移動方向</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="text">
+                                        <field name="TEXT">下</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <statement name="DO1">
+                                  <block type="move_player">
+                                    <field name="move">"bottom"</field>
+                                  </block>
+                                </statement>
+                                <value name="IF2">
+                                  <block type="logic_compare">
+                                    <field name="OP">EQ</field>
+                                    <value name="A">
+                                      <block type="variables_get">
+                                        <field name="VAR">移動方向</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="text">
+                                        <field name="TEXT">左</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <statement name="DO2">
+                                  <block type="move_player">
+                                    <field name="move">"left"</field>
+                                  </block>
+                                </statement>
+                                <value name="IF3">
+                                  <block type="logic_compare">
+                                    <field name="OP">EQ</field>
+                                    <value name="A">
+                                      <block type="variables_get">
+                                        <field name="VAR">移動方向</field>
+                                      </block>
+                                    </value>
+                                    <value name="B">
+                                      <block type="text">
+                                        <field name="TEXT">右</field>
+                                      </block>
+                                    </value>
+                                  </block>
+                                </value>
+                                <statement name="DO3">
+                                  <block type="move_player">
+                                    <field name="move">"right"</field>
+                                  </block>
+                                </statement>
+                                <statement name="ELSE">
+                                  <block type="look">
+                                    <field name="look">"top"</field>
+                                  </block>
+                                </statement>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </next>
+  </block>
+
+</category>
