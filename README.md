@@ -96,6 +96,51 @@ node tool/check.mjs
 
 ルームの分離・WebSocket・タイマーの3点を確認します。所要 15 秒ほどです。
 
+## Cloudflare へデプロイする
+
+準備はすべて済んでいます。**必要なのはログインだけです。**
+
+```bash
+npx wrangler login
+```
+
+ブラウザが開くので「Allow」を押してください。そのあと次の1コマンドで、
+デプロイから動作確認まで通しで実行します。
+
+```bash
+./tool/deploy.sh
+```
+
+このスクリプトは順に、認証の確認 → ビルドの確認 → デプロイ →
+公開先での動作確認（ルームの分離・WebSocket・タイマー）を行います。
+
+### 初回だけ聞かれること
+
+このアカウントで初めて Workers をデプロイする場合、
+`workers.dev` のサブドメイン名を聞かれます。好きな名前を入力してください
+（例: `u16-shizuoka` と入れると `blockly-chaser-shizuoka-do.u16-shizuoka.workers.dev` になります）。
+
+一度決めれば以後は聞かれません。Pages の `*.pages.dev` とは別枠です。
+
+### ログインの代わりに API トークンを使う
+
+対話ログインが使えない環境では、トークンでも構いません。
+
+```bash
+CLOUDFLARE_API_TOKEN=作成したトークン ./tool/deploy.sh
+```
+
+トークンは Cloudflare ダッシュボードの My Profile → API Tokens から、
+「Edit Cloudflare Workers」テンプレートで作成できます。
+
+### デプロイ後の確認
+
+```bash
+node tool/check.mjs https://<デプロイされたURL>
+```
+
+ブラウザで開くと、何が動いていて何が未実装かを示す画面が出ます。
+
 ## 移植で失われるもの
 
 **参加者が練習している一関版との同一性です。**

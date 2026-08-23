@@ -8,12 +8,20 @@
 
 export { MatchRoom } from './room.js';
 
+import { statusPage } from './status_page.js';
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    if (url.pathname === '/') {
+      return new Response(statusPage(), {
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
+    }
+
     if (url.pathname === '/health') {
-      return Response.json({ ok: true });
+      return Response.json({ ok: true, service: 'blockly-chaser-shizuoka-do', stage: 'skeleton' });
     }
 
     // /room/<roomId>/... をそのルームの Durable Object へ渡す
