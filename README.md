@@ -2,6 +2,8 @@
 
 Blockly CHaser サーバーを **Cloudflare Durable Objects** で動かす版。**検証段階です。**
 
+**デプロイ済み**: https://blockly-chaser-shizuoka-do.blockly-chaser-shizuoka-do.workers.dev
+
 大会本番で使うのは Node 版の
 [blockly-chaser-shizuoka](https://github.com/umeharatakahito/blockly-chaser-shizuoka) です。
 こちらはそれとは別の第2案として、独立したリポジトリで進めます。
@@ -71,10 +73,14 @@ Node 版は `setTimeout` を14箇所で使っています（相手の10秒待ち
 骨組みだけです。試合ロジックはまだ入っていません。
 危ないところが先に成立するかを確かめる順で作っています。
 
+**以下は本番の Cloudflare 上で確認済みです**（ローカルだけでなく、実際にデプロイした環境で
+`node tool/check.mjs <URL>` を通しています）。
+
 - [x] ルームごとにインスタンスが分かれ、状態が混ざらない
 - [x] WebSocket を hibernation 対応で受けられる
 - [x] 複数のタイマーが1本のアラームに畳み込まれ、期限どおりに鳴る
 - [x] 状態が SQLite に残る
+- [x] 無料プランで Durable Objects が動く
 - [ ] 試合ロジック（盤面・移動・探索・設置・勝敗判定）
 - [ ] CPU 対戦
 - [ ] クライアント側の通信を Socket.IO から生の WebSocket へ
@@ -132,6 +138,13 @@ CLOUDFLARE_API_TOKEN=作成したトークン ./tool/deploy.sh
 
 トークンは Cloudflare ダッシュボードの My Profile → API Tokens から、
 「Edit Cloudflare Workers」テンプレートで作成できます。
+
+### 注意: `wrangler dev --remote` は使えない
+
+SQLite バックエンドの Durable Objects は `--remote` プレビューに対応していません
+（`SQLite in Durable Objects is only supported in local mode` と警告が出て起動しません）。
+
+確認は「ローカル (`wrangler dev`)」か「実際にデプロイしてから」のどちらかになります。
 
 ### デプロイ後の確認
 
