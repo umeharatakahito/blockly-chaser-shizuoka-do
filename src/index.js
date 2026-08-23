@@ -45,7 +45,6 @@ const PAGES = {
   '/tournament': 'tournament',
   '/movies': 'movies',
   '/entry': 'entry',
-  '/upload': 'upload',
   '/admin': 'admin',
 };
 
@@ -62,6 +61,8 @@ const ADMIN_PAGES = {
 const REDIRECTS = {
   '/menu-programming-exp': '/menu-programming',
   '/programming-exp': '/programming',
+  // 提出はエントリーと同じ画面にまとめた
+  '/upload': '/entry',
 };
 
 /** Cookie から言語を読む。未知の値なら既定 */

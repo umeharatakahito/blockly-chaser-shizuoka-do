@@ -9,7 +9,7 @@
  * そのままテストできる。
  */
 
-export const DEFAULT_TITLE = 'U-16プログラミングコンテスト静岡大会';
+export const DEFAULT_TITLE = '2026 U16静岡プログラミングコンテスト';
 
 /** 空のトーナメント */
 export function emptyTournament() {

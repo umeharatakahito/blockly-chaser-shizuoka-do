@@ -64,7 +64,7 @@
 
       <!-- 大会モード -->
       <section class="mode mode_contest">
-        <h2 class="mode_title"><span>大会モード</span><small>Contest</small></h2>
+        <h2 class="mode_title"><span>2026 U16静岡プログラミングコンテスト</span><small>Contest</small></h2>
         <div class="mode_cards">
           <a class="card card_orange" href="/tournament">
             <div class="card_info"><%- LNG["BRACKET_INFO"] %></div>
@@ -79,18 +79,13 @@
           <a class="card card_orange" href="/entry">
             <div class="card_info"><%- LNG["ENTRY_INFO"] %></div>
             <div class="card_title">エントリー</div>
-            <div class="card_en">Entry</div>
-          </a>
-          <a class="card card_orange" href="/upload">
-            <div class="card_info"><%- LNG["UPLOAD_INFO"] %></div>
-            <div class="card_title">アップロード</div>
-            <div class="card_en">Data Upload</div>
+            <div class="card_en">Entry &amp; Upload</div>
           </a>
         </div>
       </section>
 
-      <!-- 運営モード -->
-      <section class="mode mode_admin">
+      <!-- 運営モード。普段は隠してあり、ヘッダーを5回押すと出る -->
+      <section class="mode mode_admin" id="admin_mode" hidden>
         <h2 class="mode_title"><span>運営モード</span><small>Staff</small></h2>
         <div class="mode_cards">
           <a class="card card_gray" href="/admin">
@@ -103,6 +98,8 @@
 
     </div>
   </div>
+
+  <script src="/javascripts/menu-top.js"></script>
 
 </body>
 

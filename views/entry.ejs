@@ -2,7 +2,7 @@
 <html lang="ja">
 
 <head>
-  <%- include('./common/page-head', {pageTitle: 'CHaser エントリー'}) %>
+  <%- include('./common/page-head', {pageTitle: 'CHaser エントリーと提出'}) %>
 </head>
 
 <body class="admin_body">
@@ -22,9 +22,9 @@
     <div id="notice"></div>
 
     <div class="admin_card">
-      <h2 class="admin_card_title">大会にエントリーする</h2>
+      <h2 class="admin_card_title">1. エントリーする</h2>
       <p class="admin_note">
-        対戦表に載る名前を登録します。名前は20文字まで。あとでプログラムを提出するときにも同じ名前を使います。
+        対戦表に載る名前を登録します。名前は20文字まで。登録すると、下の「プログラムを提出する」で選べるようになります。
       </p>
       <div class="admin_field">
         <label for="name">選手名 (対戦表に載る名前) <strong>必須</strong></label>
@@ -47,9 +47,35 @@
       <button class="admin_button" id="submit">エントリーする</button>
     </div>
 
+    <div class="admin_card" id="upload_card">
+      <h2 class="admin_card_title">2. プログラムを提出する</h2>
+      <p class="admin_note">
+        プログラミング画面で保存した <strong>.blch</strong> ファイルを提出します。
+        同じ名前で何度でも提出できます。大会では<strong>いちばん新しいもの</strong>を使います。
+      </p>
+      <div class="admin_field">
+        <label for="entry_name">選手名 (エントリーした名前)</label>
+        <select class="admin_text" id="entry_name"></select>
+      </div>
+      <div class="admin_field">
+        <label for="file">ファイル (.blch)</label>
+        <input class="admin_text" type="file" id="file" accept=".blch,.zip,.json,.xml">
+      </div>
+      <div class="admin_field">
+        <label for="upload_note">メモ (任意)</label>
+        <input class="admin_text" type="text" id="upload_note" maxlength="200" placeholder="例: 決勝用に変更">
+      </div>
+      <button class="admin_button" id="upload_submit">提出する</button>
+    </div>
+
     <div class="admin_card">
       <h2 class="admin_card_title">エントリー済み <span id="entry_count"></span></h2>
       <div id="entry_list"></div>
+    </div>
+
+    <div class="admin_card">
+      <h2 class="admin_card_title">提出済み <span id="upload_count"></span></h2>
+      <div id="upload_list"></div>
     </div>
   </div>
 
