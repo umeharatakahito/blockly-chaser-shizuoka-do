@@ -7,7 +7,8 @@
     "dev": "npm run build && wrangler dev",
     "deploy": "npm run build && wrangler deploy",
     "test": "node --test --test-concurrency=1",
-    "build": "node tool/build_views.mjs"
+    "build": "node tool/build_views.mjs",
+    "smoke": "node tool/smoke.mjs"
   },
   "devDependencies": {
     "ejs": "^6.0.1",

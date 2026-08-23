@@ -53,8 +53,13 @@
   function renderMaps() {
     var list = document.getElementById('map_list');
     list.innerHTML = '';
-    // ボットが hot に入るので、CPU の無い対人ルームを使う
-    Object.keys(maps).forEach(function (id) {
+    // ボットが hot に入るので、CPU の無い対人ルームを使う。大会マップ(静岡)を先に並べる
+    var ids = Object.keys(maps).sort(function (a, b) {
+      var sa = String(maps[a].name).indexOf('静岡') === 0 ? 0 : 1;
+      var sb = String(maps[b].name).indexOf('静岡') === 0 ? 0 : 1;
+      return sa - sb || a.localeCompare(b);
+    });
+    ids.forEach(function (id) {
       var m = maps[id];
       if (m.cpu) return;
       if (String(m.name).indexOf('room_onetime') !== -1) return;

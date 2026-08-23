@@ -53,7 +53,7 @@ if [ -z "$URL" ]; then
   echo ""
   echo "デプロイは完了しましたが、URL を読み取れませんでした。"
   echo "上の出力に表示されている URL に対して次を実行してください:"
-  echo "  node tool/check.mjs <URL>"
+  echo "  node tool/smoke.mjs <URL>"
   exit 0
 fi
 
@@ -62,7 +62,7 @@ echo "4. 公開先で動作を確認します: $URL"
 echo "   （Cloudflare 全体に行き渡るまで少し待ちます）"
 sleep 10
 
-node tool/check.mjs "$URL"
+node tool/smoke.mjs "$URL"
 
 cat <<MSG
 
