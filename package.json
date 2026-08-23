@@ -1,0 +1,14 @@
+{
+  "name": "blockly-chaser-shizuoka-do",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Blockly CHaser サーバーの Cloudflare Durable Objects 版（検証中）",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "node --test --test-concurrency=1"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}
