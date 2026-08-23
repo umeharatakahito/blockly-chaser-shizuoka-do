@@ -150,3 +150,12 @@
   font-size: 14px;
   color: #8a8a8a;
 }
+
+/* YouTube などは iframe で埋め込む。16:9 で表示する */
+.movie_player iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 70vh;
+  display: block;
+  border: 0;
+}

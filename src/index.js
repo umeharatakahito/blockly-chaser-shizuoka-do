@@ -16,7 +16,7 @@ export { MovieStore } from './movies_do.js';
 import { statusPage } from './status_page.js';
 import maps from './data/maps.json' with { type: 'json' };
 import tutorialData from './data/tutorial.json' with { type: 'json' };
-import { isAllowedFile, mimeTypeFor, sanitizeFileName, sanitizeId } from './movies_do.js';
+
 
 const LANGS = ['ja', 'ja-k'];
 const DEFAULT_LANG = 'ja';
@@ -59,97 +59,23 @@ function joinList() {
 /**
  * 試合動画。
  *
- * 動画そのものは R2、目録は Durable Object という分担にしている。
- * R2 が有効になっていない間は一覧が空になるだけで、画面は壊れない。
+ * 動画そのものは預からず、URL だけを保存する。
+ * 保存領域(R2)を用意する必要がなく、支払い方法の登録もいらない。
  */
-async function handleMovies(request, env, path, url) {
+async function handleMovies(request, env, path) {
   const store = env.MOVIES_META.get(env.MOVIES_META.idFromName('main'));
 
-  /* 動画ファイルの配信 */
-  const file = /^\/movies\/file\/(.+)$/.exec(path);
-  if (file) {
-    if (!env.MOVIES) return new Response('動画の保存先が未設定です', { status: 503 });
-
-    const meta = await store.fetch('https://do/movies/item/' + encodeURIComponent(file[1]));
-    if (!meta.ok) return new Response('Not Found', { status: 404 });
-
-    const movie = await meta.json();
-    const object = await env.MOVIES.get(movie.objectKey, {
-      range: request.headers,
-      onlyIf: request.headers,
-    });
-    if (!object) return new Response('Not Found', { status: 404 });
-
-    const headers = new Headers();
-    object.writeHttpMetadata(headers);
-    headers.set('Content-Type', mimeTypeFor(movie.objectKey));
-    headers.set('Accept-Ranges', 'bytes');
-    headers.set('etag', object.httpEtag);
-
-    if (object.range && object.size !== undefined) {
-      const start = object.range.offset ?? 0;
-      const end = start + (object.range.length ?? object.size) - 1;
-      headers.set('Content-Range', `bytes ${start}-${end}/${object.size}`);
-      return new Response(object.body, { status: 206, headers });
-    }
-    return new Response(object.body, { headers });
-  }
-
-  /* アップロード。運営だけが使う */
-  if (path === '/movies/upload' && request.method === 'POST') {
-    if (!env.MOVIES) {
-      return Response.json({ ok: false, error: 'R2 が有効になっていません' }, { status: 503 });
-    }
-
-    const form = await request.formData();
-    const upload = form.get('movie');
-    if (!upload || typeof upload === 'string') {
-      return Response.json({ ok: false, error: 'ファイルが選ばれていません' }, { status: 400 });
-    }
-
-    const fileName = sanitizeFileName(upload.name);
-    if (!isAllowedFile(fileName)) {
-      return Response.json({ ok: false, error: 'mp4 / webm / m4v のいずれかを選んでください' }, { status: 400 });
-    }
-
-    const objectKey = Date.now() + '-' + fileName;
-    await env.MOVIES.put(objectKey, upload.stream(), {
-      httpMetadata: { contentType: mimeTypeFor(fileName) },
-    });
-
-    const id = sanitizeId(String(form.get('id') || fileName.replace(/\.[^.]+$/, '')));
-    await store.fetch('https://do/movies/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        id,
-        objectKey,
-        title: form.get('title') || fileName,
-        description: form.get('description') || '',
-        date: form.get('date') || '',
-        order: form.get('order'),
-      }),
-    });
-
-    return Response.json({ ok: true, id });
-  }
-
-  /* 目録の読み書き */
+  // 目録の読み書き
   if (path === '/movies/list' || path === '/movies/admin-list'
-      || (request.method === 'POST' && /^\/movies\/(register|update|hide|show)$/.test(path))) {
-    if (!env.MOVIES && path === '/movies/list') {
-      return Response.json({ movies: [], available: false });
-    }
+      || (request.method === 'POST' && /^\/movies\/(save|hide|show|remove)$/.test(path))) {
     return store.fetch(request);
   }
 
-  /* 画面 */
+  // 画面
   const lng = pickLang(request);
   if (path === '/movies') return page(request, env, lng, 'movies');
   if (path === '/movies/admin') return page(request, env, lng, 'movies-admin');
-
-  const player = /^\/movies\/([^/]+)$/.exec(path);
-  if (player) return page(request, env, lng, 'movie-player');
+  if (/^\/movies\/[^/]+$/.test(path)) return page(request, env, lng, 'movie-player');
 
   return null;
 }
@@ -201,7 +127,7 @@ export default {
 
     /* --- 試合動画 --- */
     if (path.startsWith('/movies')) {
-      const res = await handleMovies(request, env, path, url);
+      const res = await handleMovies(request, env, path);
       if (res) return res;
     }
 

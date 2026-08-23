@@ -28,14 +28,6 @@
     .then(function (data) {
       root.innerHTML = '';
 
-      if (data.available === false) {
-        root.appendChild(empty(
-          '動画機能は準備中です。',
-          '運営が保存先を用意すると使えるようになります。'
-        ));
-        return;
-      }
-
       if (!data.movies || data.movies.length === 0) {
         root.appendChild(empty(
           'まだ動画がありません。',
