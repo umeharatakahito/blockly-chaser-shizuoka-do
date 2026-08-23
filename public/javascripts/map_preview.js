@@ -1,6 +1,6 @@
 /**
  * マップの盤面を小さな表にして出す。
- * menu-watching.js の server_info と同じセルの見た目(画像クラス)を使う。
+ * セルの見た目(画像クラス)は menu-watching.css のものを使う。
  */
 function renderMapPreview(container, map) {
   container.innerHTML = '';

@@ -35,7 +35,7 @@ const PAGES = [
   { view: 'index', lngFile: 'index', title: { ja: 'メニュー', 'ja-k': 'メニュー' } },
   { view: 'menu-tutorial', lngFile: 'menu-tutorial', title: { ja: 'ステージ選択', 'ja-k': 'ステージせんたく' } },
   { view: 'menu-programming', lngFile: 'menu-programming', title: { ja: 'データ選択', 'ja-k': 'データせんたく' } },
-  { view: 'menu-match', lngFile: 'menu-watching', title: { ja: 'ルーム選択', 'ja-k': 'ルームせんたく' } },
+  { view: 'menu-match', lngFile: null, title: { ja: 'マップ選択', 'ja-k': 'マップせんたく' } },
   { view: 'menu-bot', lngFile: null, title: { ja: 'ボット対戦', 'ja-k': 'ボットたいせん' } },
   { view: 'menu-ghost', lngFile: null, title: { ja: 'ゴースト対戦', 'ja-k': 'ゴーストたいせん' } },
   { view: 'programming', lngFile: 'programming', title: { ja: 'プログラミング', 'ja-k': 'プログラミング' } },

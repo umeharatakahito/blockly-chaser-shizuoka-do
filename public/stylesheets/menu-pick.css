@@ -213,3 +213,36 @@
   font-size: 14px;
   padding: 10px 0;
 }
+
+/* 主なボタンの下に置く、控えめなボタン(観戦など) */
+.pick_sub {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  border: solid 1px #c9c9c9;
+  border-radius: 8px;
+  background: #fff;
+  color: #555;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.pick_sub:hover {
+  background: #f4f4f4;
+}
+
+.pick_sub:disabled {
+  color: #bbb;
+  cursor: default;
+}
+
+.pick_card .admin_text {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: solid 1px #c9c9c9;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: inherit;
+}

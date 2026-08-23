@@ -1,54 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 
 <head>
   <meta charset="utf-8">
-  <title>CHaser Match Menu</title>
+  <title>CHaser 対人対戦</title>
   <link rel="icon" href="/images/favicon.ico">
   <link rel='stylesheet' href='/stylesheets/style.css' />
-  <link rel='stylesheet' href='/stylesheets/menu.css' />
   <link rel='stylesheet' href='/stylesheets/menu-watching.css' />
+  <link rel='stylesheet' href='/stylesheets/menu-pick.css' />
   <link rel='stylesheet' href='/stylesheets/animation.css' />
-
   <%- include('./common/config-init') %>
-
-    <script src="/javascripts/jquery-3.4.1.min.js"></script>
-
-    <script>const lng_list = <%- JSON.stringify(LNG) %>;</script>
-
-
 </head>
 
 <body>
   <%- include('./common/config', {LNG: C_LNG}) %>
 
-    <div class="header">
-
-      <div class="back_page">
-        <div class="back_button"><a href="/"></a></div>
-      </div>
-      <div class="control_area">
-        <div class="page_title">
-          <h1><span class="page_title_span">対人対戦</span><%- title %></h1>
-        </div>
-        <div class="control_button">
-          <button id="configButton" title="<%- LNG[" CONFIG"] %>"></button>
-        </div>
-      </div>
-
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/"></a></div>
     </div>
-
-    <div id="menu_area">
-      <div id="watching_list">
-
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">対人対戦</span><%- title %></h1>
       </div>
-      <div id="watching_info">
-
+      <div class="control_button">
+        <button id="configButton" title="<%- C_LNG["CONFIG"] %>"></button>
       </div>
     </div>
+  </div>
 
-    <script src="/javascripts/menu-watching.js"></script>
+  <div class="content">
+    <div class="pick_area">
+      <div class="pick_left">
+        <div class="pick_card">
+          <h2>1. マップを選ぶ</h2>
+          <div id="map_list" class="pick_list"></div>
+        </div>
+      </div>
 
+      <div class="pick_right">
+        <div class="pick_card">
+          <h2>2. 合言葉を決める (なくてもよい)</h2>
+          <input type="text" id="token_input" class="admin_text" placeholder="半角英数字。空らんのままでもOK" maxlength="20">
+          <div class="pick_note">
+            同じマップでも、合言葉が違えば別の試合になります。
+            まわりで同時に対戦するときは、相手と同じ合言葉を決めてください。
+          </div>
+
+          <h2>3. 対戦する</h2>
+          <button id="go_button" class="pick_go">対戦する</button>
+          <button id="watch_button" class="pick_sub">この試合を観戦する</button>
+          <div class="pick_note">
+            次の画面で、2人ぶんのプログラム(.blch)を cool 側と hot 側に読み込みます。<br>
+            別々のパソコンから戦うときは、プログラミング画面の「ゲームサーバーに接続する」ブロックで
+            <strong>同じマップと同じ合言葉</strong>を指定してください。
+          </div>
+          <div id="map_name" class="pick_item_name" style="margin:14px 0 6px"></div>
+          <div id="map_preview"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/javascripts/map_preview.js"></script>
+  <script src="/javascripts/menu-vs.js"></script>
 </body>
 
 </html>
