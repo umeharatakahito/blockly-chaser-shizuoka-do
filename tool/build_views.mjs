@@ -49,9 +49,11 @@ const PAGES = [
   { view: 'movie-player', lngFile: null, title: { ja: '試合動画', 'ja-k': 'しあいどうが' } },
   { view: 'movies-admin', lngFile: null, title: { ja: '試合動画の管理', 'ja-k': 'しあいどうがのかんり' } },
   { view: 'entry', lngFile: null, title: { ja: 'エントリーと提出', 'ja-k': 'エントリーとていしゅつ' } },
+  { view: 'works', lngFile: null, title: { ja: '作品部門 提出', 'ja-k': 'さくひんぶもん ていしゅつ' } },
   { view: 'admin', lngFile: null, title: { ja: '運営メニュー', 'ja-k': '運営メニュー' } },
   { view: 'admin-entries', lngFile: null, title: { ja: 'エントリー一覧', 'ja-k': 'エントリー一覧' } },
   { view: 'admin-uploads', lngFile: null, title: { ja: '提出プログラム', 'ja-k': '提出プログラム' } },
+  { view: 'admin-works', lngFile: null, title: { ja: '作品部門の提出', 'ja-k': '作品部門の提出' } },
   { view: 'admin-records', lngFile: null, title: { ja: 'ボット対戦の記録', 'ja-k': 'ボット対戦の記録' } },
 ];
 

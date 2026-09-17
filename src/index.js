@@ -10,8 +10,8 @@
  *
  * 画面の構成:
  *   通常モード  チュートリアル / 対人対戦 / ボット対戦 / ゴースト対戦 / プログラミング
- *   大会モード  対戦トーナメント / 試合動画 / エントリー / データアップロード
- *   運営モード  (鍵つき) 対戦表・動画・エントリー・アップロード・記録の管理
+ *   大会モード  対戦トーナメント / 試合動画 / エントリー / データアップロード / 作品部門の提出
+ *   運営モード  (鍵つき) 対戦表・動画・エントリー・アップロード・作品・記録の管理
  */
 
 export { MatchRoom } from './room.js';
@@ -20,6 +20,7 @@ export { MovieStore } from './movies_do.js';
 export { RecordStore } from './records_do.js';
 
 import { statusPage } from './status_page.js';
+import { handleWorks, worksReady, checkGas, MAX_WORK_BYTES } from './works.js';
 import { isAdmin, hasAdminKey, login, logout, forbidden, isLocalhost } from './admin.js';
 import { describeLevel, MIN_LEVEL, MAX_LEVEL } from './game/bot.js';
 import maps from './data/maps.json' with { type: 'json' };
@@ -45,6 +46,7 @@ const PAGES = {
   '/tournament': 'tournament',
   '/movies': 'movies',
   '/entry': 'entry',
+  '/works': 'works',
   '/admin': 'admin',
 };
 
@@ -54,6 +56,7 @@ const ADMIN_PAGES = {
   '/movies/admin': 'movies-admin',
   '/admin/entries': 'admin-entries',
   '/admin/uploads': 'admin-uploads',
+  '/admin/works': 'admin-works',
   '/admin/records': 'admin-records',
 };
 
@@ -129,6 +132,9 @@ const DATA_ROUTES = [
   { binding: 'RECORDS', method: 'POST', path: '/upload/add' },
   { binding: 'RECORDS', method: 'GET', re: /^\/upload\/(admin-list|file)$/, admin: true },
   { binding: 'RECORDS', method: 'POST', path: '/upload/remove', admin: true },
+  // 作品部門(start / finish は Worker で受ける。handleWorks を参照)
+  { binding: 'RECORDS', method: 'GET', path: '/works/admin-list', admin: true },
+  { binding: 'RECORDS', method: 'POST', path: '/works/remove', admin: true },
 ];
 
 function findDataRoute(method, path) {
@@ -180,6 +186,18 @@ export default {
       return res || Response.json({ ok: false, error: '鍵が違います' }, { status: 403 });
     }
     if (path === '/admin/logout' && request.method === 'POST') return logout();
+
+    /* --- 作品部門の提出 --- */
+    if (path === '/works/config') {
+      return Response.json({ ready: worksReady(env), passcode: Boolean(env.WORKS_PASSCODE), maxBytes: MAX_WORK_BYTES });
+    }
+    if (path === '/works/check') {
+      if (!(await isAdmin(request, env))) return forbidden();
+      return Response.json(await checkGas(env));
+    }
+    if ((path === '/works/start' || path === '/works/finish') && request.method === 'POST') {
+      return handleWorks(request, env, path);
+    }
 
     /* --- Durable Object へ渡すデータ --- */
     const route = findDataRoute(request.method, path);

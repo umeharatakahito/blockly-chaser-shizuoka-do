@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%- include('./common/page-head', {pageTitle: 'CHaser 作品部門 提出'}) %>
+</head>
+
+<body class="admin_body">
+
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/"></a></div>
+    </div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">大会</span><%- title %></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin_area">
+    <div id="notice"></div>
+
+    <div class="admin_card" id="form_card">
+      <h2 class="admin_card_title">U16作品部門 提出フォーム</h2>
+      <p class="admin_note">
+        作品のファイルを<strong>1つの zip に圧縮して</strong>送ってください(<span id="max_size">1GB</span> まで)。
+        ログインは要りません。不明な点は大会運営までお問い合わせください。
+      </p>
+      <div class="admin_field">
+        <label for="school">学校名 <strong>必須</strong></label>
+        <input class="admin_text" type="text" id="school" maxlength="60" autocomplete="organization">
+      </div>
+      <div class="admin_field">
+        <label for="name">お名前 <strong>必須</strong></label>
+        <input class="admin_text" type="text" id="name" maxlength="40" autocomplete="name">
+      </div>
+      <div class="admin_field">
+        <label for="email">連絡先メールアドレス <strong>必須</strong></label>
+        <input class="admin_text" type="email" id="email" maxlength="120" autocomplete="email">
+        <p class="admin_note">連絡先はこちらからの連絡にのみ利用し、公開しません。大会後に破棄します。</p>
+      </div>
+      <div class="admin_field">
+        <label for="title">作品名 <strong>必須</strong></label>
+        <input class="admin_text" type="text" id="title" maxlength="80">
+      </div>
+      <div class="admin_field">
+        <label for="file">作品ファイル (zip) <strong>必須</strong></label>
+        <input class="admin_text" type="file" id="file">
+      </div>
+      <div class="admin_field" id="passcode_field" hidden>
+        <label for="passcode">受付コード <strong>必須</strong></label>
+        <input class="admin_text" type="text" id="passcode" maxlength="40" autocomplete="off">
+        <p class="admin_note">大会運営からお知らせした受付コードを入れてください。</p>
+      </div>
+      <button class="admin_button" id="submit">提出する</button>
+
+      <div id="progress_box" hidden style="margin-top:16px">
+        <progress id="progress" max="100" value="0" style="width:100%;height:20px"></progress>
+        <p class="admin_note" id="progress_text"></p>
+        <p class="admin_note">送信が終わるまで、この画面を閉じないでください。途中で切れたときは、同じファイルを選んでもう一度「提出する」を押すと続きから送ります。</p>
+      </div>
+    </div>
+
+    <div class="admin_card" id="done_card" hidden>
+      <h2 class="admin_card_title">提出完了</h2>
+      <p class="admin_ok" id="done_text"></p>
+      <p class="admin_note">この画面を閉じても大丈夫です。作り直した作品は、もう一度提出できます(運営は新しいものを確認します)。</p>
+    </div>
+  </div>
+
+  <script src="/javascripts/works.js"></script>
+
+</body>
+
+</html>

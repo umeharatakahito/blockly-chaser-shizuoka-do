@@ -4,6 +4,7 @@
  *   bot_records : ボット対戦の結果と、人間側の手の記録(ゴーストの元)
  *   entries     : 大会へのエントリー
  *   uploads     : 参加者が提出したプログラム(.blch)
+ *   works       : 作品部門の提出一覧。ファイル本体と連絡先は Google ドライブ側にある(src/works.js)
  *
  * どれも量は知れているので1つのオブジェクトにまとめてある。
  * .blch は zip で数KB〜数十KB。SQLite の1行に収まる(上限は 1MB に絞る)。
@@ -58,6 +59,18 @@ export class RecordStore extends DurableObject {
         content     BLOB NOT NULL,
         note        TEXT NOT NULL DEFAULT '',
         created_at  TEXT NOT NULL
+      );
+      CREATE TABLE IF NOT EXISTS works (
+        id            TEXT PRIMARY KEY,
+        school        TEXT NOT NULL,
+        name          TEXT NOT NULL,
+        title         TEXT NOT NULL,
+        file_name     TEXT NOT NULL,
+        size          INTEGER NOT NULL,
+        status        TEXT NOT NULL DEFAULT 'uploading',
+        drive_file_id TEXT NOT NULL DEFAULT '',
+        created_at    TEXT NOT NULL,
+        done_at       TEXT
       );
     `);
   }
@@ -172,6 +185,12 @@ export class RecordStore extends DurableObject {
             'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(row.file_name)}`,
           },
         });
+      }
+
+      /* --- 作品部門 --- */
+      case '/works/admin-list': {
+        const rows = this.sql.exec('SELECT * FROM works ORDER BY created_at DESC').toArray();
+        return Response.json({ works: rows });
       }
 
       default:
@@ -292,6 +311,29 @@ export class RecordStore extends DurableObject {
       /* --- アップロード --- */
       case '/upload/remove': {
         this.sql.exec('DELETE FROM uploads WHERE id = ?', String(body.id || ''));
+        return Response.json({ ok: true });
+      }
+
+      /* --- 作品部門。add / done は Worker (src/works.js) からだけ呼ばれる --- */
+      case '/works/add': {
+        this.sql.exec(
+          'INSERT INTO works (id, school, name, title, file_name, size, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          String(body.id), clip(body.school, 60), clip(body.name, 40), clip(body.title, 80),
+          clip(body.fileName, 200), Number(body.size) || 0, now()
+        );
+        return Response.json({ ok: true });
+      }
+
+      case '/works/done': {
+        this.sql.exec(
+          "UPDATE works SET status = 'done', drive_file_id = ?, size = COALESCE(?, size), done_at = ? WHERE id = ?",
+          String(body.fileId || ''), Number(body.size) || null, now(), String(body.id || '')
+        );
+        return Response.json({ ok: true });
+      }
+
+      case '/works/remove': {
+        this.sql.exec('DELETE FROM works WHERE id = ?', String(body.id || ''));
         return Response.json({ ok: true });
       }
 

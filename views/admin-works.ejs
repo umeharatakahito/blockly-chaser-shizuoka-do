@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <%- include('./common/page-head', {pageTitle: 'CHaser 作品部門の提出'}) %>
+</head>
+
+<body class="admin_body">
+
+  <div class="header">
+    <div class="back_page">
+      <div class="back_button"><a href="/admin"></a></div>
+    </div>
+    <div class="control_area">
+      <div class="page_title">
+        <h1><span class="page_title_span">運営</span><%- title %></h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin_area">
+    <div id="notice"></div>
+
+    <div class="admin_card">
+      <h2 class="admin_card_title">作品部門の提出 <span id="works_count"></span></h2>
+      <p class="admin_note">
+        ファイルは u16@sangi.jp の Google ドライブ「U16作品部門 提出」フォルダに、
+        連絡先メールを含む台帳は同じフォルダのスプレッドシートにあります。
+        「ドライブで開く」は u16@sangi.jp でログインしたブラウザで開いてください。<br>
+        「送信中」は、送っている最中か途中でやめたものです。ここで削除しても一覧から消えるだけで、ドライブのファイルは残ります。
+      </p>
+      <div class="admin_inline">
+        <label><input type="checkbox" id="done_only" checked> 完了したものだけ表示</label>
+      </div>
+      <div id="works_list" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <script src="/javascripts/admin-works.js"></script>
+
+</body>
+
+</html>
