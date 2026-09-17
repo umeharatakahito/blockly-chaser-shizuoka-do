@@ -41,10 +41,15 @@ function board(rows, turn = 100) {
 /* --- 実サーバーとの突き合わせ --- */
 
 test('getReady が Node 版の実サーバーと同じ9マスを返す', () => {
-  // Node 版で実際に room_010 に入って受け取った値。
-  // blockly-chaser-shizuoka の test/game_integration.test.js で固定してある
-  const state = createState(loadMap('room_010'));
-  assert.deepStrictEqual(getReady(state, 'cool'), [0, 0, 0, 0, 0, 3, 0, 3, 0]);
+  // Node 版で実際に旧 room_010 に入って受け取った値。
+  // blockly-chaser-shizuoka の test/game_integration.test.js で固定してある。
+  // 静岡マップは作り直したので、当時の cool の周囲だけをここに写してある
+  const s = board([
+    '...',
+    '.Co',
+    '.o.',
+  ]);
+  assert.deepStrictEqual(getReady(s, 'cool'), [0, 0, 0, 0, 0, 3, 0, 3, 0]);
 });
 
 /* --- 走査 --- */

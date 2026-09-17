@@ -87,14 +87,12 @@ test('決着後は行動できない', () => {
 
 test('ブロックへ突っ込むと決着する', () => {
   const m = startMatch(createMatch(fixedMap('room_014')));
+  // 静岡マップは開始位置のまわりを空けてあるので、テスト用に左隣へブロックを置く
+  m.state.map[m.state.cool.y][m.state.cool.x - 1] = 1;
   const cells = requestReady(m, 'cool');
+  assert.strictEqual(cells[3], 2, 'テスト用のブロックが左隣に見えていません');
 
-  // 周囲でブロック(2)の方向を探して突っ込む
-  const dirs = { 1: 'top', 3: 'left', 5: 'right', 7: 'bottom' };
-  const wallIndex = Object.keys(dirs).find((i) => cells[i] === 2);
-  assert.ok(wallIndex, 'テスト用にブロックが隣接している必要があります');
-
-  const out = applyAction(m, 'cool', 'move_player', dirs[wallIndex]);
+  const out = applyAction(m, 'cool', 'move_player', 'left');
   assert.ok(out.result, '決着していません');
   assert.strictEqual(out.result.winner, 'hot');
 });
