@@ -21,6 +21,8 @@
  * Apps Script のコードは tool/gas/ にある。
  */
 
+import { callGas, gasReady } from './gas.js';
+
 /** 1ファイルの上限。Drive 自体は 5TB まで受けるが、回線と時間を考えてここで止める */
 export const MAX_WORK_BYTES = 1024 ** 3;
 
@@ -54,29 +56,7 @@ export function checkWorkRequest(body) {
   return { ok: true, value };
 }
 
-export const worksReady = (env) => Boolean(env.WORKS_GAS_URL && env.WORKS_GAS_SECRET);
-
-/** Apps Script を呼ぶ。Apps Script は 302 で結果のページへ飛ばすので、そのまま追う */
-async function callGas(env, payload) {
-  const res = await fetch(env.WORKS_GAS_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...payload, secret: env.WORKS_GAS_SECRET }),
-    redirect: 'follow',
-  });
-  const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    // 権限の設定が違うと、ログイン画面や「承認が必要です」の HTML が返ってくる
-    const title = (/<title>([^<]*)<\/title>/i.exec(text) || [])[1] || '';
-    console.log('GAS non-JSON', payload.action, res.status, res.url.replace(/\/s\/[^/]+/, '/s/…'), text.slice(0, 500));
-    return {
-      ok: false,
-      error: `Apps Script から正しい応答がありません (${payload.action}, ${res.status}${title ? ', ' + title : ''})。公開設定(全員がアクセス可)を確認してください`,
-    };
-  }
-}
+export const worksReady = gasReady;
 
 /**
  * 運営向けの診断。Apps Script が JSON を返さないときに、どこで止まっているかを見る。

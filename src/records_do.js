@@ -7,14 +7,20 @@
  *   works       : 作品部門の提出一覧。ファイル本体と連絡先は Google ドライブ側にある(src/works.js)
  *
  * どれも量は知れているので1つのオブジェクトにまとめてある。
+ *
+ * エントリーと提出プログラムは、u16@sangi.jp のドライブ(「U16プログラム部門」フォルダ)にも写す。
+ * 写し終えた行は drive_synced = 1。失敗した分は運営メニューの「ドライブへ書き出す」で送り直せる。
  * .blch は zip で数KB〜数十KB。SQLite の1行に収まる(上限は 1MB に絞る)。
  */
 
 import { DurableObject } from 'cloudflare:workers';
 import { checkName, autoName } from './names.js';
+import { callGas, gasReady, toBase64 } from './gas.js';
 
 /** ゴーストとして残す記録の上限。古い・名前なしのものから消す */
 const MAX_BOT_RECORDS = 500;
+/** 「ドライブへ書き出す」1回で送る件数。Apps Script は1件に1〜2秒かかる */
+const SYNC_BATCH = 10;
 /** 提出ファイルの上限 */
 export const MAX_UPLOAD_BYTES = 1024 * 1024;
 
@@ -73,6 +79,12 @@ export class RecordStore extends DurableObject {
         done_at       TEXT
       );
     `);
+    // あとから足した列。既にあれば ALTER は失敗するので無視する
+    for (const table of ['entries', 'uploads']) {
+      try {
+        this.sql.exec(`ALTER TABLE ${table} ADD COLUMN drive_synced INTEGER NOT NULL DEFAULT 0`);
+      } catch { /* 追加済み */ }
+    }
   }
 
   async fetch(request) {
@@ -187,6 +199,11 @@ export class RecordStore extends DurableObject {
         });
       }
 
+      /* --- ドライブへの書き出し --- */
+      case '/drive/status': {
+        return Response.json(this.#unsynced());
+      }
+
       /* --- 作品部門 --- */
       case '/works/admin-list': {
         const rows = this.sql.exec('SELECT * FROM works ORDER BY created_at DESC').toArray();
@@ -282,6 +299,7 @@ export class RecordStore extends DurableObject {
           'INSERT INTO entries (id, name, school, grade, note, created_at) VALUES (?, ?, ?, ?, ?, ?)',
           id, name, clip(body.school, 50), clip(body.grade, 20), clip(body.note, 200), now()
         );
+        this.#background(this.#syncEntry(id));
         return Response.json({ ok: true, id, name });
       }
 
@@ -291,27 +309,53 @@ export class RecordStore extends DurableObject {
         const verdict = checkName(name);
         if (!verdict.ok) return Response.json({ ok: false, error: verdict.reason }, { status: 400 });
         this.sql.exec(
-          'UPDATE entries SET name = ?, school = ?, grade = ?, note = ? WHERE id = ?',
+          'UPDATE entries SET name = ?, school = ?, grade = ?, note = ?, drive_synced = 0 WHERE id = ?',
           name, clip(body.school, 50), clip(body.grade, 20), clip(body.note, 200), id
         );
+        this.#background(this.#syncEntry(id));
         return Response.json({ ok: true });
       }
 
       case '/entry/hide':
       case '/entry/show': {
-        this.sql.exec('UPDATE entries SET hidden = ? WHERE id = ?', path.endsWith('hide') ? 1 : 0, String(body.id || ''));
+        const id = String(body.id || '');
+        this.sql.exec('UPDATE entries SET hidden = ?, drive_synced = 0 WHERE id = ?', path.endsWith('hide') ? 1 : 0, id);
+        this.#background(this.#syncEntry(id));
         return Response.json({ ok: true });
       }
 
       case '/entry/remove': {
-        this.sql.exec('DELETE FROM entries WHERE id = ?', String(body.id || ''));
+        const id = String(body.id || '');
+        this.sql.exec('DELETE FROM entries WHERE id = ?', id);
+        // ドライブの台帳は行を残し、状態だけ「削除」にする
+        this.#background(this.#gas({ action: 'entry', id, status: '削除' }));
         return Response.json({ ok: true });
       }
 
       /* --- アップロード --- */
       case '/upload/remove': {
-        this.sql.exec('DELETE FROM uploads WHERE id = ?', String(body.id || ''));
+        const id = String(body.id || '');
+        this.sql.exec('DELETE FROM uploads WHERE id = ?', id);
+        this.#background(this.#gas({ action: 'program-status', id, status: '削除' }));
         return Response.json({ ok: true });
+      }
+
+      /* --- ドライブへの書き出し(運営) --- */
+      case '/drive/sync': {
+        if (!gasReady(this.env)) return Response.json({ ok: false, error: 'Apps Script が未設定です' }, { status: 503 });
+        const entries = this.sql.exec('SELECT id FROM entries WHERE drive_synced = 0 ORDER BY created_at LIMIT ?', SYNC_BATCH).toArray();
+        const uploads = this.sql.exec('SELECT id FROM uploads WHERE drive_synced = 0 ORDER BY created_at LIMIT ?', Math.max(0, SYNC_BATCH - entries.length)).toArray();
+        let sent = 0;
+        const errors = [];
+        for (const { id } of entries) {
+          const r = await this.#syncEntry(id);
+          if (r.ok) sent++; else errors.push(r.error);
+        }
+        for (const { id } of uploads) {
+          const r = await this.#syncUpload(id);
+          if (r.ok) sent++; else errors.push(r.error);
+        }
+        return Response.json({ ok: errors.length === 0, sent, errors: [...new Set(errors)], ...this.#unsynced() });
       }
 
       /* --- 作品部門。add / done は Worker (src/works.js) からだけ呼ばれる --- */
@@ -363,7 +407,63 @@ export class RecordStore extends DurableObject {
       'INSERT INTO uploads (id, entry_name, file_name, size, content, note, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
       id, entryName, fileName, content.byteLength, content, note, now()
     );
+    this.#background(this.#syncUpload(id));
     return Response.json({ ok: true, id, fileName, size: content.byteLength });
+  }
+
+  /* ---------------------------------------------- ドライブへの書き出し */
+
+  #unsynced() {
+    const count = (table) => this.sql.exec(`SELECT COUNT(*) AS n FROM ${table} WHERE drive_synced = 0`).toArray()[0].n;
+    return { ready: gasReady(this.env), entries: count('entries'), uploads: count('uploads') };
+  }
+
+  /** 応答を返したあとも送り終えるまで待つ。失敗は drive_synced = 0 のまま残り、あとで送り直せる */
+  #background(promise) {
+    if (!gasReady(this.env)) return;
+    this.ctx.waitUntil(promise.catch((e) => console.log('drive sync failed', e && e.message)));
+  }
+
+  async #gas(payload) {
+    try {
+      return await callGas(this.env, payload);
+    } catch (e) {
+      return { ok: false, error: String(e && e.message) };
+    }
+  }
+
+  async #syncEntry(id) {
+    const row = this.sql.exec('SELECT * FROM entries WHERE id = ?', id).toArray()[0];
+    if (!row) return { ok: true };
+    const r = await this.#gas({
+      action: 'entry',
+      id,
+      createdAt: row.created_at,
+      name: row.name,
+      school: row.school,
+      grade: row.grade,
+      note: row.note,
+      status: row.hidden ? '非表示' : '有効',
+    });
+    if (r.ok) this.sql.exec('UPDATE entries SET drive_synced = 1 WHERE id = ?', id);
+    return r;
+  }
+
+  async #syncUpload(id) {
+    const row = this.sql.exec('SELECT * FROM uploads WHERE id = ?', id).toArray()[0];
+    if (!row) return { ok: true };
+    const r = await this.#gas({
+      action: 'program',
+      id,
+      createdAt: row.created_at,
+      entryName: row.entry_name,
+      fileName: row.file_name,
+      size: row.size,
+      note: row.note,
+      content: toBase64(new Uint8Array(row.content)),
+    });
+    if (r.ok) this.sql.exec('UPDATE uploads SET drive_synced = 1 WHERE id = ?', id);
+    return r;
   }
 
   /** 記録が増えすぎたら、名前のない古いものから消す */

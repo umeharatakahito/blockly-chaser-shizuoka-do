@@ -132,6 +132,9 @@ const DATA_ROUTES = [
   { binding: 'RECORDS', method: 'POST', path: '/upload/add' },
   { binding: 'RECORDS', method: 'GET', re: /^\/upload\/(admin-list|file)$/, admin: true },
   { binding: 'RECORDS', method: 'POST', path: '/upload/remove', admin: true },
+  // ドライブへの書き出し
+  { binding: 'RECORDS', method: 'GET', path: '/drive/status', admin: true },
+  { binding: 'RECORDS', method: 'POST', path: '/drive/sync', admin: true },
   // 作品部門(start / finish は Worker で受ける。handleWorks を参照)
   { binding: 'RECORDS', method: 'GET', path: '/works/admin-list', admin: true },
   { binding: 'RECORDS', method: 'POST', path: '/works/remove', admin: true },

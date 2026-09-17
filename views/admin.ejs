@@ -42,6 +42,15 @@
         </div>
       </div>
       <div class="admin_card">
+        <h2 class="admin_card_title">ドライブへの書き出し (プログラム部門)</h2>
+        <p class="admin_note">
+          エントリーと提出プログラムは、受け付けるたびに u16@sangi.jp のドライブ「U16プログラム部門」フォルダへ自動で写します。
+          写せていないもの(このしくみを入れる前の分や、通信に失敗した分)は、下のボタンでまとめて送れます。
+        </p>
+        <p class="admin_note" id="drive_status">確認中…</p>
+        <button class="admin_button" id="drive_sync" disabled>ドライブへ書き出す</button>
+      </div>
+      <div class="admin_card">
         <h2 class="admin_card_title">試合を行う</h2>
         <div class="admin_links">
           <a class="admin_link_card" href="/vs"><strong>対戦を実行する</strong><span>マップを選び、両選手の .blch を読み込んで試合をする。結果は対戦表の候補に自動で記録されます</span></a>

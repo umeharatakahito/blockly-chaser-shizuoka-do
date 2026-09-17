@@ -55,7 +55,7 @@
     // ここに書いたもの以外は静的ファイルが先に探される
     "run_worker_first": [
       "/room/*", "/health", "/status", "/api/*",
-      "/tournament*", "/movies*", "/records/*", "/entry*", "/upload*", "/works*", "/admin*",
+      "/tournament*", "/movies*", "/records/*", "/entry*", "/upload*", "/works*", "/drive/*", "/admin*",
       "/", "/menu-*", "/programming*", "/vs", "/bot", "/ghost", "/match*", "/watching", "/tutorial"
     ]
   },
