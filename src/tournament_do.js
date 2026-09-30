@@ -147,6 +147,26 @@ export class TournamentStore extends DurableObject {
         return Response.json({ ok: true, tournament: this.#save(data) });
       }
 
+      case 'results/rename': {
+        // プログラムに書かれた名前(NoName など)のまま記録された試合を、対戦表の選手名に直す。
+        // 取り込みは名前で突き合わせるので、直さないと取り込めない
+        const id = Number(body.resultId);
+        const row = this.sql.exec('SELECT payload FROM results WHERE id = ?', id).toArray()[0];
+        if (!row) return Response.json({ ok: false, error: 'その試合結果は見つかりませんでした' }, { status: 404 });
+        const clean = (v) => String(v || '').replace(/[\r\n\t]/g, ' ').trim().slice(0, 40);
+        const coolName = clean(body.coolName);
+        const hotName = clean(body.hotName);
+        if (!coolName || !hotName) return Response.json({ ok: false, error: '両方の名前を入れてください' }, { status: 400 });
+        const entry = JSON.parse(row.payload);
+        // 最初の名前は残しておく。どのプログラムの記録だったか後で分かるように
+        if (!entry.originalCoolName) entry.originalCoolName = entry.coolName;
+        if (!entry.originalHotName) entry.originalHotName = entry.hotName;
+        entry.coolName = coolName;
+        entry.hotName = hotName;
+        this.sql.exec('UPDATE results SET payload = ? WHERE id = ?', JSON.stringify(entry), id);
+        return Response.json({ ok: true });
+      }
+
       case 'import': {
         const entry = this.#recent(MAX_RESULTS).find((e) => e.id === Number(body.resultId));
         if (!entry) return Response.json({ ok: false, error: 'その試合結果は見つかりませんでした' }, { status: 404 });

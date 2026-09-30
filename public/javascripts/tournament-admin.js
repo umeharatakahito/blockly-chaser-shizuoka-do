@@ -216,12 +216,56 @@
     ['マップ', '対戦', '結果', '取り込み先'].forEach(function (t) { head.appendChild(el('th', null, t)); });
     table.appendChild(head);
 
+    // 名前を直すときの候補。対戦表の選手名
+    var names = document.getElementById('player_names');
+    if (!names) {
+      names = el('datalist');
+      names.id = 'player_names';
+      document.body.appendChild(names);
+    }
+    names.innerHTML = '';
+    state.tournament.players.forEach(function (p) {
+      var o = el('option');
+      o.value = p.name;
+      names.appendChild(o);
+    });
+
     state.recent.forEach(function (r) {
       var tr = el('tr');
       tr.appendChild(el('td', null, r.roomName || r.roomId || ''));
-      tr.appendChild(el('td', null,
+
+      // 対戦: 名前と点数。プログラムの名前(NoName など)のままなら「名前を直す」で対戦表の選手名にそろえる
+      var vs = el('td');
+      var label = el('div', null,
         r.coolName + (r.coolScore === null ? '' : ' (' + r.coolScore + ')')
-        + ' vs ' + r.hotName + (r.hotScore === null ? '' : ' (' + r.hotScore + ')')));
+        + ' vs ' + r.hotName + (r.hotScore === null ? '' : ' (' + r.hotScore + ')'));
+      vs.appendChild(label);
+      if (r.originalCoolName || r.originalHotName) {
+        vs.appendChild(el('div', 'admin_dim', '元の名前: ' + (r.originalCoolName || r.coolName) + ' vs ' + (r.originalHotName || r.hotName)));
+      }
+      var fix = el('button', 'admin_button_small', '名前を直す');
+      fix.onclick = function () {
+        fix.style.display = 'none';
+        var form = el('div', 'admin_import_row');
+        var coolIn = el('input', 'admin_text');
+        coolIn.value = r.coolName; coolIn.setAttribute('list', 'player_names'); coolIn.title = 'cool(先攻)';
+        var hotIn = el('input', 'admin_text');
+        hotIn.value = r.hotName; hotIn.setAttribute('list', 'player_names'); hotIn.title = 'hot(後攻)';
+        var save = el('button', 'admin_button_small', '保存');
+        save.onclick = function () {
+          post('results/rename', { resultId: r.id, coolName: coolIn.value, hotName: hotIn.value })
+            .then(function (res) { if (res) { notice('名前を直しました'); reload(); } });
+        };
+        form.appendChild(el('span', 'admin_dim', 'cool'));
+        form.appendChild(coolIn);
+        form.appendChild(el('span', 'admin_dim', 'hot'));
+        form.appendChild(hotIn);
+        form.appendChild(save);
+        vs.appendChild(form);
+        coolIn.focus();
+      };
+      vs.appendChild(fix);
+      tr.appendChild(vs);
 
       var outcome = r.winner === 'draw' ? '引き分け'
         : r.winner === 'cool' ? r.coolName + ' の勝ち'
