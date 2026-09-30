@@ -361,4 +361,9 @@
 }
 
 .admin_area .content { overflow: auto; }
-body.admin_body { overflow: auto; }
+/*
+ * style.css はゲーム画面のために html, body のスクロールを止めている。
+ * admin.css を読むページ(運営画面・エントリー・作品提出)は縦に長いので、ここで戻す。
+ * 以前は body.admin_body だけに付けていたが、トーナメント管理と動画の管理で付け忘れていた。
+ */
+body { overflow: auto; }
