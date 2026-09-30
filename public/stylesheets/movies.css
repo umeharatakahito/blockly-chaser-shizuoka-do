@@ -159,3 +159,9 @@
   display: block;
   border: 0;
 }
+
+/*
+ * style.css はゲーム画面のために html, body のスクロールを止めている。
+ * 動画の一覧は人数や本数が増えると縦に長くなるので、このページではスクロールを戻す。
+ */
+body { overflow: auto; }
