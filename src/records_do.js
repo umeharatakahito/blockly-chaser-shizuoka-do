@@ -308,11 +308,25 @@ export class RecordStore extends DurableObject {
         const name = String(body.name || '').trim();
         const verdict = checkName(name);
         if (!verdict.ok) return Response.json({ ok: false, error: verdict.reason }, { status: 400 });
+
+        const current = this.sql.exec('SELECT name FROM entries WHERE id = ?', id).toArray()[0];
+        if (!current) return Response.json({ ok: false, error: 'そのエントリーは見つかりませんでした' }, { status: 404 });
+        const dup = this.sql.exec('SELECT id FROM entries WHERE name = ? AND id != ?', name, id).toArray()[0];
+        if (dup) return Response.json({ ok: false, error: 'その名前はもうエントリーされています' }, { status: 409 });
+
         this.sql.exec(
           'UPDATE entries SET name = ?, school = ?, grade = ?, note = ?, drive_synced = 0 WHERE id = ?',
           name, clip(body.school, 50), clip(body.grade, 20), clip(body.note, 200), id
         );
         this.#background(this.#syncEntry(id));
+
+        // 提出プログラムは選手名で結びついている。名前を変えたら提出側もそろえないと、
+        // 会場の Node 版へ取り込むときに「提出なし」になってしまう
+        if (current.name !== name) {
+          const moved = this.sql.exec('SELECT id FROM uploads WHERE entry_name = ?', current.name).toArray();
+          this.sql.exec('UPDATE uploads SET entry_name = ?, drive_synced = 0 WHERE entry_name = ?', name, current.name);
+          for (const u of moved) this.#background(this.#syncUpload(u.id));
+        }
         return Response.json({ ok: true });
       }
 
